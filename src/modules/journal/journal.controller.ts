@@ -2,21 +2,21 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JournalService } from './journal.service';
 
-@ApiTags('Дневник')
+@ApiTags('Journal')
 @Controller('journal')
 export class JournalController {
   constructor(private readonly journalService: JournalService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Получение всех записей дневника' })
-  @ApiResponse({ status: 200, description: 'Список записей' })
+  @ApiOperation({ summary: 'Get all journal entries' })
+  @ApiResponse({ status: 200, description: 'List of entries' })
   findAll() {
     return this.journalService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Получение записи дневника по ID' })
-  @ApiResponse({ status: 200, description: 'Запись найдена' })
+  @ApiOperation({ summary: 'Get journal entry by ID' })
+  @ApiResponse({ status: 200, description: 'Entry found' })
   findOne(@Param('id') id: string) {
     return this.journalService.findOne(id);
   }

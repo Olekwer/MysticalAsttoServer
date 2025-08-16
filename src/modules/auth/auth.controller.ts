@@ -5,46 +5,48 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { MagicLinkDto } from './dto/magic-link.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { I18nService } from '../../common/i18n/i18n.service';
+// import { I18nService } from '../../common/i18n/i18n.service';
 
-@ApiTags('Аутентификация')
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly i18nService: I18nService,
+    // private readonly i18nService: I18nService, // Временно отключен
   ) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Регистрация нового пользователя' })
-  @ApiResponse({ status: 201, description: 'Пользователь успешно зарегистрирован' })
-  @ApiResponse({ status: 400, description: 'Неверные данные или пользователь уже существует' })
+  @ApiOperation({ summary: 'Register new user' })
+  @ApiResponse({ status: 201, description: 'User successfully registered' })
+  @ApiResponse({ status: 400, description: 'Invalid data or user already exists' })
   async register(@Body() createUserDto: CreateUserDto, @Req() req: any) {
-    const language = this.i18nService.detectLanguage(req);
+    // const language = this.i18nService.detectLanguage(req);
+    const language = 'en'; // Временный язык
     return this.authService.register(createUserDto, language);
   }
 
   @Post('login')
-  @ApiOperation({ summary: 'Вход в систему' })
-  @ApiResponse({ status: 200, description: 'Успешный вход' })
-  @ApiResponse({ status: 401, description: 'Неверные учетные данные' })
+  @ApiOperation({ summary: 'Login to system' })
+  @ApiResponse({ status: 200, description: 'Successful login' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
   @Post('magic-link')
-  @ApiOperation({ summary: 'Отправка magic link' })
-  @ApiResponse({ status: 200, description: 'Magic link отправлен на email' })
-  @ApiResponse({ status: 400, description: 'Пользователь не найден' })
+  @ApiOperation({ summary: 'Send magic link' })
+  @ApiResponse({ status: 200, description: 'Magic link sent to email' })
+  @ApiResponse({ status: 400, description: 'User not found' })
   async sendMagicLink(@Body() magicLinkDto: MagicLinkDto, @Req() req: any) {
-    const language = this.i18nService.detectLanguage(req);
+    // const language = this.i18nService.detectLanguage(req);
+    const language = 'en'; // Временный язык
     return this.authService.sendMagicLink(magicLinkDto, language);
   }
 
   @Get('magic-link/verify')
-  @ApiOperation({ summary: 'Подтверждение magic link' })
-  @ApiResponse({ status: 200, description: 'Magic link подтвержден' })
-  @ApiResponse({ status: 400, description: 'Недействительный или истекший токен' })
+  @ApiOperation({ summary: 'Verify magic link' })
+  @ApiResponse({ status: 200, description: 'Magic link verified' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired token' })
   async verifyMagicLink(@Query('token') token: string) {
     return this.authService.verifyMagicLink(token);
   }
@@ -52,9 +54,9 @@ export class AuthController {
   @Post('refresh')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Обновление токена' })
-  @ApiResponse({ status: 200, description: 'Токен обновлен' })
-  @ApiResponse({ status: 401, description: 'Неавторизован' })
+  @ApiOperation({ summary: 'Refresh token' })
+  @ApiResponse({ status: 200, description: 'Token refreshed' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async refreshToken(@Req() req: any) {
     return this.authService.refreshToken(req.user.id);
   }

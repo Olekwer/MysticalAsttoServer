@@ -8,17 +8,17 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Безопасность
+  // Security
   app.use(helmet());
   app.use(compression());
 
   // CORS
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3010'],
     credentials: true,
   });
 
-  // Валидация
+  // Validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -27,10 +27,10 @@ async function bootstrap() {
     }),
   );
 
-  // Swagger документация
+  // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Mystical Astro API')
-    .setDescription('API для астрологического сервиса с персональными рекомендациями')
+    .setDescription('API for astrological service with personal recommendations')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -41,8 +41,8 @@ async function bootstrap() {
   const port = process.env.APP_PORT || 3010;
   await app.listen(port);
   
-  console.log(`🚀 Приложение запущено на порту ${port}`);
-  console.log(`📚 Swagger документация доступна по адресу: http://localhost:${port}/api`);
+  console.log(`🚀 Application started on port ${port}`);
+  console.log(`📚 Swagger documentation available at: http://localhost:${port}/api`);
 }
 
 bootstrap(); 

@@ -3,9 +3,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Начинаем заполнение базы данных...');
+  console.log('🌱 Starting database seeding...');
 
-  // Создаем теги для ритуалов
+  // Create ritual tags
   const ritualTags = await Promise.all([
     prisma.ritualTag.upsert({
       where: { name: 'meditation' },
@@ -54,23 +54,23 @@ async function main() {
     }),
   ]);
 
-  console.log('✅ Теги ритуалов созданы');
+  console.log('✅ Ritual tags created');
 
-  // Создаем ритуалы
+  // Create rituals
   const rituals = await Promise.all([
     prisma.ritual.upsert({
       where: { id: 'ritual-1' },
       update: {},
       create: {
         id: 'ritual-1',
-        title: 'Утренняя медитация новолуния',
-        description: 'Спокойная медитация для постановки намерений в новолуние',
+        title: 'New Moon Morning Meditation',
+        description: 'Peaceful meditation for setting intentions during new moon',
         steps: [
-          'Найдите тихое место',
-          'Сядьте удобно, закройте глаза',
-          'Сделайте 3 глубоких вдоха',
-          'Представьте свои цели на месяц',
-          'Запишите 3 главных намерения',
+                      'Find a quiet place',
+            'Sit comfortably, close your eyes',
+            'Take 3 deep breaths',
+            'Imagine your goals for the month',
+                      'Write down 3 main intentions',
         ],
         duration: 15,
         category: 'meditation',
@@ -83,14 +83,14 @@ async function main() {
       update: {},
       create: {
         id: 'ritual-2',
-        title: 'Ритуал роста в растущую луну',
-        description: 'Активный ритуал для развития навыков и обучения',
+        title: 'Growth ritual during waxing moon',
+        description: 'Active ritual for skill development and learning',
         steps: [
-          'Подготовьте материалы для изучения',
-          'Зажгите свечу',
-          'Прочитайте новую информацию',
-          'Практикуйте новый навык 20 минут',
-          'Запишите прогресс',
+                      'Prepare study materials',
+                      'Light a candle',
+            'Read new information',
+            'Practice new skill for 20 minutes',
+                      'Write down progress',
         ],
         duration: 30,
         category: 'growth',
@@ -103,13 +103,13 @@ async function main() {
       update: {},
       create: {
         id: 'ritual-3',
-        title: 'Ритуал действия в первую четверть',
-        description: 'Энергичный ритуал для принятия решений и действий',
+        title: 'Action ritual during first quarter',
+        description: 'Energetic ritual for decision making and actions',
         steps: [
-          'Определите главную задачу дня',
-          'Сделайте разминку',
-          'Выполните задачу с полной отдачей',
-          'Отпразднуйте успех',
+                      'Define the main task of the day',
+                      'Do warm-up',
+            'Complete the task with full dedication',
+            'Celebrate success',
         ],
         duration: 45,
         category: 'action',
@@ -122,8 +122,8 @@ async function main() {
       update: {},
       create: {
         id: 'ritual-4',
-        title: 'Ритуал завершения в полнолуние',
-        description: 'Мощный ритуал для проявления и реализации планов',
+        title: 'Completion ritual during full moon',
+        description: 'Powerful ritual for manifestation and plan realization',
         steps: [
           'Подготовьте алтарь',
           'Зажгите 3 свечи',
@@ -139,7 +139,7 @@ async function main() {
     }),
   ]);
 
-  console.log('✅ Ритуалы созданы');
+  console.log('✅ Rituals created');
 
   // Создаем камни
   const stones = await Promise.all([
@@ -213,7 +213,7 @@ async function main() {
     }),
   ]);
 
-  console.log('✅ Камни созданы');
+  console.log('✅ Stones created');
 
   // Создаем рецепты настоев
   const teaRecipes = await Promise.all([
@@ -279,9 +279,9 @@ async function main() {
     }),
   ]);
 
-  console.log('✅ Рецепты настоев созданы');
+  console.log('✅ Tincture recipes created');
 
-  console.log('🎉 База данных успешно заполнена!');
+  console.log('🎉 Database successfully seeded!');
 }
 
 main()

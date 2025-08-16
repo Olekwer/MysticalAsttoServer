@@ -5,14 +5,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@ApiTags('Пользователи')
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Создание нового пользователя' })
-  @ApiResponse({ status: 201, description: 'Пользователь создан' })
+  @ApiOperation({ summary: 'Create new user' })
+  @ApiResponse({ status: 201, description: 'User created' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
@@ -20,8 +20,8 @@ export class UsersController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Получение всех пользователей' })
-  @ApiResponse({ status: 200, description: 'Список пользователей' })
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'List of users' })
   findAll() {
     return this.usersService.findAll();
   }
@@ -29,7 +29,7 @@ export class UsersController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Получение профиля текущего пользователя' })
+  @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({ status: 200, description: 'Профиль пользователя' })
   getProfile(@Req() req: any) {
     return this.usersService.findOne(req.user.id);

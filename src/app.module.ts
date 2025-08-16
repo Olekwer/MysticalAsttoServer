@@ -4,7 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
 import { TerminusModule } from '@nestjs/terminus';
 
-// Модули приложения
+    // Application modules
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ContentModule } from './modules/content/content.module';
@@ -19,7 +19,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { HealthModule } from './health/health.module';
 
-// Общие модули
+    // Common modules
 import { DatabaseModule } from './common/database/database.module';
 import { RedisModule } from './common/redis/redis.module';
 import { RabbitMQModule } from './common/rabbitmq/rabbitmq.module';
@@ -29,16 +29,16 @@ import { I18nModule } from './common/i18n/i18n.module';
 
 @Module({
   imports: [
-    // Конфигурация
+    // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
 
-    // Планировщик задач
+    // Task scheduler
     ScheduleModule.forRoot(),
 
-    // Очереди
+    // Queues
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST || 'localhost',
@@ -47,18 +47,18 @@ import { I18nModule } from './common/i18n/i18n.module';
       },
     }),
 
-    // Мониторинг здоровья
+    // Health monitoring
     TerminusModule,
 
-    // Общие модули
+    // Common modules
     DatabaseModule,
     RedisModule,
     RabbitMQModule,
     StorageModule,
     EmailModule,
-    I18nModule,
+    // I18nModule, // Временно отключен
 
-    // Модули приложения
+    // Application modules
     AuthModule,
     UsersModule,
     ContentModule,

@@ -18,7 +18,7 @@ export class RecommenderService {
 
   @Cron(CronExpression.EVERY_DAY_AT_5AM)
   async generateDailyRecommendationsForAllUsers() {
-    this.logger.log('🔄 Генерация ежедневных рекомендаций для всех пользователей');
+    this.logger.log('🔄 Generating daily recommendations for all users');
     
     try {
       const users = await this.prisma.user.findMany({
@@ -29,9 +29,9 @@ export class RecommenderService {
         await this.generateDailyRecommendationsForUser(user.id);
       }
 
-      this.logger.log(`✅ Рекомендации сгенерированы для ${users.length} пользователей`);
+      this.logger.log(`✅ Recommendations generated for ${users.length} users`);
     } catch (error) {
-      this.logger.error('❌ Ошибка генерации рекомендаций:', error);
+      this.logger.error('❌ Error generating recommendations:', error);
     }
   }
 
@@ -43,31 +43,31 @@ export class RecommenderService {
       });
 
       if (!user) {
-        throw new Error('Пользователь не найден');
+        throw new Error('User not found');
       }
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Получаем энергетический показатель
+      // Get energy indicator
       const energyScore = await this.energyEngineService.getUserEnergyScore(userId, today);
       
-      // Получаем астрологические влияния
+      // Get astrological influences
       const astroInfluences = await this.astroService.getAstrologicalInfluences(today);
 
-      // Генерируем рекомендации
+      // Generate recommendations
       const recommendations = await this.generateRecommendations(user, energyScore, astroInfluences);
 
-      // Сохраняем рекомендации в базу
+      // Save recommendations to database
       await this.saveRecommendations(userId, today, recommendations);
 
-      // Кэшируем рекомендации
+      // Cache recommendations
       await this.cacheRecommendations(userId, today, recommendations);
 
-      this.logger.log(`✅ Рекомендации для пользователя ${userId} сгенерированы`);
+              this.logger.log(`✅ Recommendations for user ${userId} generated`);
       return recommendations;
     } catch (error) {
-      this.logger.error(`❌ Ошибка генерации рекомендаций для пользователя ${userId}:`, error);
+              this.logger.error(`❌ Error generating recommendations for user ${userId}:`, error);
       throw error;
     }
   }
@@ -75,26 +75,26 @@ export class RecommenderService {
   private async generateRecommendations(user: any, energyScore: any, astroInfluences: any): Promise<any> {
     const recommendations = {};
 
-    // Ритуал дня
+          // Ritual of the day
     recommendations['ritual'] = await this.recommendRitual(user, energyScore, astroInfluences);
     
-    // Камень дня
+          // Stone of the day
     recommendations['stone'] = await this.recommendStone(user, energyScore, astroInfluences);
     
-    // Рецепт настоя
+          // Tincture recipe
     recommendations['tea'] = await this.recommendTea(user, energyScore, astroInfluences);
     
-    // Энергетический совет
+          // Energy advice
     recommendations['energyTip'] = this.generateEnergyTip(energyScore.score, astroInfluences);
     
-    // Астрологический путь
+          // Astrological path
     recommendations['astroPath'] = this.generateAstroPath(user, astroInfluences);
 
     return recommendations;
   }
 
   private async recommendRitual(user: any, energyScore: any, astroInfluences: any): Promise<any> {
-    // Логика выбора ритуала на основе энергии и астрологических влияний
+          // Logic for choosing ritual based on energy and astrological influences
     const energyLevel = energyScore.score;
     const moonPhase = astroInfluences.moonPhase;
     const userElement = user.element;
@@ -105,14 +105,14 @@ export class RecommenderService {
       },
     };
 
-    // Фильтрация по сложности на основе энергии
+          // Filter by complexity based on energy
     if (energyLevel < 30) {
       ritualQuery.where.difficulty = 'EASY';
     } else if (energyLevel < 70) {
       ritualQuery.where.difficulty = { in: ['EASY', 'MEDIUM'] };
     }
 
-    // Фильтрация по категории на основе лунной фазы
+          // Filter by category based on moon phase
     const phaseCategories = {
       'NEW_MOON': ['meditation', 'intention-setting', 'planning'],
       'WAXING_CRESCENT': ['growth', 'learning', 'development'],
@@ -131,13 +131,13 @@ export class RecommenderService {
     const rituals = await this.prisma.ritual.findMany(ritualQuery);
     
     if (rituals.length === 0) {
-      // Fallback - любой доступный ритуал
+      // Fallback - any available ritual
       return await this.prisma.ritual.findFirst({
         where: { isPremium: user.isPremium ? undefined : false },
       });
     }
 
-    // Выбираем случайный ритуал из подходящих
+          // Choose random ritual from suitable ones
     return rituals[Math.floor(Math.random() * rituals.length)];
   }
 
@@ -153,12 +153,12 @@ export class RecommenderService {
       },
     };
 
-    // Фильтрация по знаку зодиака
+    // Filter by zodiac sign
     if (userZodiac) {
       stoneQuery.where.zodiacSigns = { has: userZodiac };
     }
 
-    // Фильтрация по элементу
+    // Filter by element
     if (userElement) {
       stoneQuery.where.elements = { has: userElement };
     }
@@ -166,13 +166,13 @@ export class RecommenderService {
     const stones = await this.prisma.stone.findMany(stoneQuery);
     
     if (stones.length === 0) {
-      // Fallback - любой доступный камень
+      // Fallback - any available stone
       return await this.prisma.stone.findFirst({
         where: { isPremium: user.isPremium ? undefined : false },
       });
     }
 
-    // Выбираем случайный камень из подходящих
+          // Choose random stone from suitable ones
     return stones[Math.floor(Math.random() * stones.length)];
   }
 
@@ -188,12 +188,12 @@ export class RecommenderService {
       },
     };
 
-    // Фильтрация по знаку зодиака
+    // Filter by zodiac sign
     if (userZodiac) {
       teaQuery.where.zodiacSigns = { has: userZodiac };
     }
 
-    // Фильтрация по элементу
+    // Filter by element
     if (userElement) {
       teaQuery.where.elements = { has: userElement };
     }
@@ -201,13 +201,13 @@ export class RecommenderService {
     const teas = await this.prisma.teaRecipe.findMany(teaQuery);
     
     if (teas.length === 0) {
-      // Fallback - любой доступный рецепт
+      // Fallback - any available recipe
       return await this.prisma.teaRecipe.findFirst({
         where: { isPremium: user.isPremium ? undefined : false },
       });
     }
 
-    // Выбираем случайный рецепт из подходящих
+          // Choose random recipe from suitable ones
     return teas[Math.floor(Math.random() * teas.length)];
   }
 
@@ -215,13 +215,13 @@ export class RecommenderService {
     const moonPhase = astroInfluences.moonPhase;
     
     if (energyScore < 30) {
-      return 'Сегодня низкий уровень энергии. Рекомендуется отдых, медитация и планирование на будущее.';
+      return 'Today low energy level. Rest, meditation and future planning are recommended.';
     } else if (energyScore < 50) {
-      return 'Умеренная энергия. Хорошее время для спокойных дел и подготовки к активным действиям.';
+      return 'Moderate energy. Good time for quiet activities and preparation for active actions.';
     } else if (energyScore < 70) {
-      return 'Хороший уровень энергии. Можно заниматься активными делами и реализовывать планы.';
+      return 'Good energy level. You can engage in active activities and implement plans.';
     } else {
-      return 'Высокая энергия! Отличное время для важных дел, новых проектов и достижения целей.';
+      return 'High energy! Great time for important tasks, new projects and achieving goals.';
     }
   }
 
@@ -231,52 +231,52 @@ export class RecommenderService {
     
     const pathSuggestions = {
       'NEW_MOON': {
-        theme: 'Новые начинания',
-        focus: 'Планирование и постановка целей',
-        actions: ['Медитация', 'Визуализация', 'Запись планов'],
-        duration: 'До следующего новолуния',
+        theme: 'New beginnings',
+        focus: 'Planning and goal setting',
+                  actions: ['Meditation', 'Visualization', 'Writing plans'],
+          duration: 'Until next new moon',
       },
       'WAXING_CRESCENT': {
-        theme: 'Развитие и рост',
-        focus: 'Обучение и приобретение навыков',
-        actions: ['Изучение нового', 'Практика', 'Эксперименты'],
-        duration: 'До первой четверти',
+                  theme: 'Development and growth',
+          focus: 'Learning and skill acquisition',
+          actions: ['Learning new things', 'Practice', 'Experiments'],
+                  duration: 'Until first quarter',
       },
       'FIRST_QUARTER': {
-        theme: 'Действие и решительность',
-        focus: 'Преодоление препятствий',
-        actions: ['Принятие решений', 'Активные действия', 'Смелость'],
-        duration: 'До полнолуния',
+                  theme: 'Action and determination',
+          focus: 'Overcoming obstacles',
+          actions: ['Decision making', 'Active actions', 'Courage'],
+          duration: 'Until full moon',
       },
       'WAXING_GIBBOUS': {
-        theme: 'Завершение и совершенствование',
-        focus: 'Детализация и улучшение',
-        actions: ['Доработка проектов', 'Исправление ошибок', 'Подготовка к запуску'],
-        duration: 'До полнолуния',
+                  theme: 'Completion and perfection',
+          focus: 'Detailing and improvement',
+          actions: ['Project refinement', 'Bug fixes', 'Launch preparation'],
+                  duration: 'Until full moon',
       },
       'FULL_MOON': {
-        theme: 'Проявление и реализация',
-        focus: 'Достижение результатов',
-        actions: ['Запуск проектов', 'Празднование', 'Демонстрация талантов'],
-        duration: 'До последней четверти',
+                  theme: 'Manifestation and realization',
+          focus: 'Achieving results',
+          actions: ['Project launch', 'Celebration', 'Talent demonstration'],
+        duration: 'Until last quarter',
       },
       'WANING_GIBBOUS': {
-        theme: 'Анализ и оценка',
-        focus: 'Пересмотр и корректировка',
-        actions: ['Анализ результатов', 'Оценка эффективности', 'Планирование изменений'],
-        duration: 'До последней четверти',
+        theme: 'Analysis and evaluation',
+        focus: 'Review and adjustment',
+        actions: ['Result analysis', 'Effectiveness evaluation', 'Change planning'],
+        duration: 'Until last quarter',
       },
       'LAST_QUARTER': {
-        theme: 'Отпускание и очищение',
-        focus: 'Избавление от лишнего',
-        actions: ['Прощение', 'Очищение пространства', 'Отпускание прошлого'],
-        duration: 'До убывающего серпа',
+        theme: 'Letting go and cleansing',
+        focus: 'Getting rid of excess',
+        actions: ['Forgiveness', 'Space cleansing', 'Letting go of the past'],
+        duration: 'Until waning crescent',
       },
       'WANING_CRESCENT': {
-        theme: 'Отдых и подготовка',
-        focus: 'Внутренняя работа',
-        actions: ['Отдых', 'Медитация', 'Подготовка к новому циклу'],
-        duration: 'До новолуния',
+        theme: 'Rest and preparation',
+        focus: 'Inner work',
+        actions: ['Rest', 'Meditation', 'Preparation for new cycle'],
+        duration: 'Until new moon',
       },
     };
 
@@ -334,7 +334,7 @@ export class RecommenderService {
     const targetDate = date || new Date();
     targetDate.setHours(0, 0, 0, 0);
 
-    // Сначала проверяем кэш
+    // First check cache
     const cacheKey = `recommendations:${userId}:${targetDate.toISOString().split('T')[0]}`;
     const cachedRecs = await this.redis.get(cacheKey);
 
@@ -346,7 +346,7 @@ export class RecommenderService {
       };
     }
 
-    // Если нет в кэше, получаем из базы
+    // If not in cache, get from database
     const recommendations = await this.prisma.recommendation.findMany({
       where: {
         userId,
@@ -356,13 +356,13 @@ export class RecommenderService {
     });
 
     if (recommendations.length > 0) {
-      // Формируем объект рекомендаций
+      // Form recommendations object
       const recsObj = {};
       for (const rec of recommendations) {
         recsObj[rec.type.toLowerCase().replace(/_/g, '')] = rec.content;
       }
 
-      // Кэшируем результат
+      // Cache result
       const ttl = this.calculateTTLUntilMidnight();
       await this.redis.set(cacheKey, JSON.stringify(recsObj), ttl);
 
@@ -373,7 +373,7 @@ export class RecommenderService {
       };
     }
 
-    // Если нет данных, генерируем
+          // If no data, generate
     const generatedRecs = await this.generateDailyRecommendationsForUser(userId);
     
     return {

@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { RecommenderService } from './recommender.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@ApiTags('Рекомендации')
+@ApiTags('Recommendations')
 @Controller('recommendations')
 export class RecommenderController {
   constructor(private readonly recommenderService: RecommenderService) {}
@@ -11,8 +11,8 @@ export class RecommenderController {
   @Get('today')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Получение рекомендаций на сегодня' })
-  @ApiResponse({ status: 200, description: 'Рекомендации на сегодня' })
+  @ApiOperation({ summary: 'Get recommendations for today' })
+  @ApiResponse({ status: 200, description: 'Recommendations for today' })
   async getTodayRecommendations(@Req() req: any) {
     return this.recommenderService.getUserRecommendations(req.user.id);
   }
@@ -20,8 +20,8 @@ export class RecommenderController {
   @Get('feed/today')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Получение полного фида на сегодня' })
-  @ApiResponse({ status: 200, description: 'Полный фид с рекомендациями и энергетическим показателем' })
+  @ApiOperation({ summary: 'Get full feed for today' })
+  @ApiResponse({ status: 200, description: 'Full feed with recommendations and energy indicator' })
   async getFeedToday(@Req() req: any) {
     return this.recommenderService.getFeedToday(req.user.id);
   }

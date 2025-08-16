@@ -5,7 +5,7 @@ import { PrismaService } from '../../common/database/prisma.service';
 export class ContentService {
   constructor(private prisma: PrismaService) {}
 
-  // Заглушка для базовой функциональности
+  // Stub for basic functionality
   async findAllRituals() {
     return this.prisma.ritual.findMany();
   }

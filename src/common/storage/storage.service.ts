@@ -8,12 +8,12 @@ export class StorageService {
   // Заглушка для базовой функциональности S3/MinIO
   async uploadFile(file: Buffer, filename: string): Promise<string> {
     // В реальном проекте здесь будет загрузка в S3/MinIO
-    console.log(`📁 Файл ${filename} загружен (заглушка)`);
+    console.log(`📁 File ${filename} uploaded (stub)`);
     return `https://storage.example.com/${filename}`;
   }
 
   async deleteFile(filename: string): Promise<void> {
     // В реальном проекте здесь будет удаление из S3/MinIO
-    console.log(`🗑️ Файл ${filename} удален (заглушка)`);
+    console.log(`🗑️ File ${filename} deleted (stub)`);
   }
 } 

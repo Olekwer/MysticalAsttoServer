@@ -16,7 +16,7 @@ export class EnergyEngineService {
 
   @Cron(CronExpression.EVERY_DAY_AT_4AM)
   async calculateDailyEnergyForAllUsers() {
-    this.logger.log('🔄 Расчет daily energy score для всех пользователей');
+    this.logger.log('🔄 Calculating daily energy score for all users');
     
     try {
       const users = await this.prisma.user.findMany({
@@ -27,9 +27,9 @@ export class EnergyEngineService {
         await this.calculateDailyEnergyForUser(user.id);
       }
 
-      this.logger.log(`✅ Daily energy score рассчитан для ${users.length} пользователей`);
+      this.logger.log(`✅ Daily energy score calculated for ${users.length} users`);
     } catch (error) {
-      this.logger.error('❌ Ошибка расчета daily energy score:', error);
+              this.logger.error('❌ Error calculating daily energy score:', error);
     }
   }
 
@@ -41,7 +41,7 @@ export class EnergyEngineService {
       });
 
       if (!user) {
-        throw new Error('Пользователь не найден');
+        throw new Error('User not found');
       }
 
       const today = new Date();

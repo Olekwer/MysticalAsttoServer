@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { I18nService } from '../i18n/i18n.service';
+// import { I18nService } from '../i18n/i18n.service';
 
 @Injectable()
 export class EmailService {
@@ -9,7 +9,7 @@ export class EmailService {
 
   constructor(
     private configService: ConfigService,
-    private i18nService: I18nService,
+    // private i18nService: I18nService, // Временно отключен
   ) {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('SMTP_HOST'),
@@ -26,16 +26,16 @@ export class EmailService {
     const mailOptions = {
       from: this.configService.get<string>('SMTP_FROM'),
       to: email,
-      subject: await this.i18nService.translateToLanguage(language as any, 'common.magic_link_subject'),
+      subject: 'Magic Link - Mystical Astro', // Временный заголовок
       html: await this.generateMagicLinkHTML(magicLink, language),
     };
 
     try {
       await this.transporter.sendMail(mailOptions);
-      console.log(`✅ Magic link отправлен на ${email} (${language})`);
+      console.log(`✅ Magic link sent to ${email} (${language})`);
     } catch (error) {
-      console.error('❌ Ошибка отправки email:', error);
-      throw new Error('Не удалось отправить email');
+      console.error('❌ Error sending email:', error);
+      throw new Error('Failed to send email');
     }
   }
 
@@ -43,15 +43,15 @@ export class EmailService {
     const mailOptions = {
       from: this.configService.get<string>('SMTP_FROM'),
       to: email,
-      subject: await this.i18nService.translateToLanguage(language as any, 'common.welcome'),
+      subject: 'Welcome to Mystical Astro!', // Временный заголовок
       html: await this.generateWelcomeHTML(firstName, language),
     };
 
     try {
       await this.transporter.sendMail(mailOptions);
-      console.log(`✅ Приветственное письмо отправлено на ${email} (${language})`);
+      console.log(`✅ Welcome email sent to ${email} (${language})`);
     } catch (error) {
-      console.error('❌ Ошибка отправки приветственного письма:', error);
+      console.error('❌ Error sending welcome email:', error);
     }
   }
 
@@ -59,20 +59,20 @@ export class EmailService {
     const mailOptions = {
       from: this.configService.get<string>('SMTP_FROM'),
       to: email,
-      subject: await this.i18nService.translateToLanguage(language as any, 'common.daily_digest_subject'),
+      subject: 'Your Daily Astro Digest', // Временный заголовок
       html: await this.generateDailyDigestHTML(userData, recommendations, language),
     };
 
     try {
       await this.transporter.sendMail(mailOptions);
-      console.log(`✅ Ежедневный дайджест отправлен на ${email} (${language})`);
+      console.log(`✅ Daily digest sent to ${email} (${language})`);
     } catch (error) {
-      console.error('❌ Ошибка отправки ежедневного дайджеста:', error);
+      console.error('❌ Error sending daily digest:', error);
     }
   }
 
   private async generateMagicLinkHTML(magicLink: string, language: string): Promise<string> {
-    const t = (key: string) => this.i18nService.translateToLanguage(language as any, `common.${key}`);
+    const t = (key: string) => 'common.' + key; // Временное отключение перевода
     
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -98,7 +98,7 @@ export class EmailService {
   }
 
   private async generateWelcomeHTML(firstName?: string, language: string = 'en'): Promise<string> {
-    const t = (key: string) => this.i18nService.translateToLanguage(language as any, `common.${key}`);
+    const t = (key: string) => 'common.' + key; // Временное отключение перевода
     
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -126,7 +126,7 @@ export class EmailService {
   }
 
   private async generateDailyDigestHTML(userData: any, recommendations: any, language: string = 'en'): Promise<string> {
-    const t = (key: string) => this.i18nService.translateToLanguage(language as any, `common.${key}`);
+    const t = (key: string) => 'common.' + key; // Временное отключение перевода
     
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

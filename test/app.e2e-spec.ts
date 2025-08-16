@@ -18,7 +18,7 @@ describe('AppController (e2e)', () => {
   it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
-      .expect(404); // Поскольку у нас нет корневого маршрута
+      .expect(404); // Since we don't have a root route
   });
 
   it('/health (GET)', () => {

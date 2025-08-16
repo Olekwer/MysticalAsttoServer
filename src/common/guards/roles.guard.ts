@@ -22,8 +22,8 @@ export class RolesGuard implements CanActivate {
       return false;
     }
 
-    // Проверяем, есть ли у пользователя необходимая роль
-    // В данном проекте используем простую проверку на premium статус
+    // Check if user has required role
+    // In this project we use simple premium status check
     if (requiredRoles.includes('premium')) {
       return user.isPremium === true;
     }

@@ -21,19 +21,19 @@ export class AuthService {
   async register(createUserDto: CreateUserDto, language?: string) {
     const { email, password, ...userData } = createUserDto;
 
-    // Проверяем, существует ли пользователь
+    // Check if user exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      throw new BadRequestException('Пользователь с таким email уже существует');
+      throw new BadRequestException('User with this email already exists');
     }
 
-    // Хешируем пароль
+    // Hash password
     const hashedPassword = password ? await bcrypt.hash(password, 12) : null;
 
-    // Создаем пользователя
+    // Create user
     const user = await this.prisma.user.create({
       data: {
         email,
@@ -42,17 +42,17 @@ export class AuthService {
       },
     });
 
-    // Создаем профиль
+    // Create profile
     await this.prisma.userProfile.create({
       data: {
         userId: user.id,
       },
     });
 
-    // Отправляем приветственное письмо
+    // Send welcome email
     await this.emailService.sendWelcomeEmail(email, user.firstName, language || 'en');
 
-    // Генерируем токены
+    // Generate tokens
     const tokens = await this.generateTokens(user.id, user.email);
 
     return {
@@ -77,12 +77,12 @@ export class AuthService {
     });
 
     if (!user || !user.password) {
-      throw new UnauthorizedException('Неверные учетные данные');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Неверные учетные данные');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const tokens = await this.generateTokens(user.id, user.email);
@@ -109,14 +109,14 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new BadRequestException('Пользователь не найден');
+      throw new BadRequestException('User not found');
     }
 
-    // Генерируем токен для magic link
+    // Generate token for magic link
     const token = await this.generateMagicLinkToken(user.id);
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 минут
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-    // Сохраняем токен в базе
+    // Save token in database
     await this.prisma.user.update({
       where: { id: user.id },
       data: {
@@ -125,12 +125,12 @@ export class AuthService {
       },
     });
 
-    // Отправляем email
+    // Send email
     const magicLink = `${this.configService.get('APP_URL')}/auth/magic-link?token=${token}`;
     
     await this.emailService.sendMagicLink(email, magicLink, language || 'en');
 
-    return { message: 'Magic link отправлен на ваш email' };
+    return { message: 'Magic link sent to your email' };
   }
 
   async verifyMagicLink(token: string) {
@@ -144,10 +144,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new BadRequestException('Недействительный или истекший токен');
+      throw new BadRequestException('Invalid or expired token');
     }
 
-    // Очищаем токен
+    // Clear token
     await this.prisma.user.update({
       where: { id: user.id },
       data: {
@@ -179,7 +179,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Пользователь не найден');
+      throw new UnauthorizedException('User not found');
     }
 
     const tokens = await this.generateTokens(user.id, user.email);

@@ -5,7 +5,7 @@ import { PrismaService } from '../../common/database/prisma.service';
 export class AnalyticsService {
   constructor(private prisma: PrismaService) {}
 
-  // Заглушка для базовой функциональности
+  // Stub for basic functionality
   async findAll() {
     return this.prisma.user.findMany();
   }
