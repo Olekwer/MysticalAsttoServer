@@ -1,4 +1,4 @@
-# 🎉 Проект Mystical Astro Server завершен!
+# Проект Mystical Astro Server!
 
 ## 📋 Что было создано
 

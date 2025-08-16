@@ -1,4 +1,4 @@
-# 🔧 Решение проблем с Mystical Astro Server
+# Решение проблем с Mystical Astro Server
 
 ## ❌ Ошибка: "Не удается найти имя 'process'"
 
