@@ -1,9 +1,42 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting database seeding...');
+
+  // Create test user
+  const hashedPassword = await bcrypt.hash('test123', 10);
+  
+  const testUser = await prisma.user.upsert({
+    where: { email: 'test@example.com' },
+    update: {},
+    create: {
+      email: 'test@example.com',
+      password: hashedPassword,
+      zodiacSign: 'LEO',
+      element: 'FIRE',
+      timezone: 'Europe/Moscow',
+    },
+  });
+
+  console.log('✅ Test user created:', testUser.email);
+
+  // Create user profile
+  const userProfile = await prisma.userProfile.upsert({
+    where: { userId: testUser.id },
+    update: {},
+    create: {
+      userId: testUser.id,
+      preferences: {
+        ritualTypes: ['meditation', 'crystal_work'],
+        energyLevels: ['high', 'medium'],
+      },
+    },
+  });
+
+  console.log('✅ User profile created');
 
   // Create ritual tags
   const ritualTags = await Promise.all([
@@ -282,6 +315,9 @@ async function main() {
   console.log('✅ Tincture recipes created');
 
   console.log('🎉 Database successfully seeded!');
+  console.log('🔑 Test user credentials:');
+  console.log('   Email: test@example.com');
+  console.log('   Password: test123');
 }
 
 main()

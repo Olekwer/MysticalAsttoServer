@@ -17,7 +17,29 @@ npm run start:dev
 📚 Swagger documentation available at: http://localhost:3010/api
 ```
 
-### 2. Проверка работоспособности
+### 2. Заполнение базы данных (mock)
+```bash
+# Mock seed - работает без реальной базы данных
+npm run db:seed:mock
+
+# Реальный seed - требует PostgreSQL
+npm run db:seed
+```
+
+**Результат mock seed**:
+```
+🌱 Starting mock database seeding...
+✅ Mock ritual tags created: 9
+✅ Mock rituals created: 4
+✅ Mock stones created: 4
+✅ Mock tea recipes created: 3
+✅ Mock users created: 2
+✅ Mock energy scores created: 2
+✅ Mock recommendations created: 2
+🎉 Mock database successfully seeded!
+```
+
+### 3. Проверка работоспособности
 ```bash
 # Health check
 curl http://localhost:3010/health
@@ -136,6 +158,11 @@ src/
 - **Redis**: In-memory кэш (сбрасывается при перезапуске)
 - **RabbitMQ**: Операции логируются, но не выполняются
 - **I18n**: Отключен, используется английский язык
+
+### Mock данные:
+- **Seed**: `npm run db:seed:mock` - создает тестовые данные в памяти
+- **Содержимое**: 9 тегов ритуалов, 4 ритуала, 4 камня, 3 рецепта чая, 2 пользователя
+- **Сброс**: Данные сбрасываются при перезапуске приложения
 
 ### Для продакшена нужно:
 1. Настроить PostgreSQL

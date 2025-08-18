@@ -50,8 +50,8 @@ cd MysticalAsttoServer
 # Запустить все сервисы
 docker-compose up -d
 
-# Приложение будет доступно на http://localhost:3000
-# Swagger документация: http://localhost:3000/api
+# Приложение будет доступно на http://localhost:3010
+# Swagger документация: http://localhost:3010/api
 ```
 
 ### 2. Локальный запуск

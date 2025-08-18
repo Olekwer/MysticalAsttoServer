@@ -1,244 +1,151 @@
-# 🔮 Mystical Astro Server
+# Mystical Astro Server
 
-Астрологический сервис с персональными рекомендациями, построенный на NestJS с модульной архитектурой.
-
-## 🎯 Цель проекта
-
-Выдавать персональные рекомендации на основе астрологических данных:
-- Уровень энергии дня
-- Ритуал дня
-- Напоминания и уведомления
-- Рецепты настоев
-- Камни дня
-- Астрологический путь развития
-
-## 🏗️ Архитектура
-
-### Технологический стек
-- **Core API**: TypeScript + NestJS
-- **ORM**: Prisma (PostgreSQL)
-- **База данных**: PostgreSQL 15+
-- **Кэш**: Redis
-- **Очереди**: BullMQ + Redis
-- **Планировщик**: Nest Schedule
-- **Аутентификация**: JWT + Magic Link
-- **Астрологические расчеты**: Swiss Ephemeris
-
-### Модульная структура
-```
-src/
-├── common/           # Общие сервисы
-│   ├── database/    # Prisma + PostgreSQL
-│   ├── redis/       # Redis кэш
-│   ├── email/       # Email сервис
-│   └── storage/     # S3/MinIO
-├── modules/          # Основные модули
-│   ├── auth/        # Аутентификация
-│   ├── users/       # Пользователи
-│   ├── astro/       # Астрология
-│   ├── energy-engine/ # Энергетический движок
-│   ├── recommender/ # Рекомендации
-│   ├── rituals/     # Ритуалы
-│   ├── journal/     # Дневник
-│   └── ...          # Другие модули
-```
+Сервер для астрологического сервиса с персональными рекомендациями, построенный на NestJS.
 
 ## 🚀 Быстрый старт
 
-### Предварительные требования
-- Node.js 18+
-- PostgreSQL 15+
-- Redis 6+
-- Docker (опционально)
-
-### 1. Клонирование и установка
+### 1. Установка зависимостей
 ```bash
-git clone <repository-url>
-cd MysticalAsttoServer
 npm install
+# или
+yarn install
 ```
 
-### 2. Настройка окружения
+### 2. Настройка переменных окружения
 ```bash
 cp env.example .env
-# Отредактируйте .env файл с вашими настройками
 ```
 
-### 3. Настройка базы данных
-```bash
-# Создайте базу данных PostgreSQL
-createdb mystical_astro
+Отредактируйте `.env` файл, указав ваши настройки для:
+- Базы данных PostgreSQL
+- Redis
+- RabbitMQ
+- JWT ключи
+- SMTP настройки
+- AWS S3 (или MinIO)
+- Stripe
 
-# Примените миграции
-npm run prisma:migrate
-
-# Сгенерируйте Prisma клиент
-npm run prisma:generate
+### 3. Настройка CORS для фронтенда
+Убедитесь, что в `.env` файле настроен CORS для фронтенда:
+```env
+ALLOWED_ORIGINS="http://localhost:5173,http://localhost:3000"
 ```
 
-### 4. Запуск Redis
-```bash
-# Локально
-redis-server
-
-# Или через Docker
-docker run -d -p 6379:6379 redis:6-alpine
-```
-
-### 5. Запуск приложения
-```bash
-# Режим разработки
-npm run start:dev
-
-# Продакшн
-npm run build
-npm run start:prod
-```
-
-## 📊 API Endpoints
-
-### Аутентификация
-- `POST /auth/register` - Регистрация
-- `POST /auth/login` - Вход
-- `POST /auth/magic-link` - Отправка magic link
-- `GET /auth/magic-link/verify` - Подтверждение magic link
-- `POST /auth/refresh` - Обновление токена
-
-### Пользователи
-- `GET /users/profile` - Профиль текущего пользователя
-- `PATCH /users/profile` - Обновление профиля
-- `GET /users/:id` - Получение пользователя по ID
-
-### Астрология
-- `GET /astro/moon/current` - Текущая лунная фаза
-- `GET /astro/moon/date?date=2024-01-15` - Лунная фаза для даты
-- `GET /astro/influences/today` - Астрологические влияния на сегодня
-
-### Энергетический движок
-- `GET /energy/today` - Энергетический показатель на сегодня
-- `GET /energy/history?days=30` - История энергетических показателей
-
-## 🔧 Конфигурация
-
-### Переменные окружения
-```bash
-# База данных
-DATABASE_URL="postgresql://username:password@localhost:5432/mystical_astro"
-
-# Redis
-REDIS_URL="redis://localhost:6379"
-
-# JWT
-JWT_SECRET="your-super-secret-jwt-key"
-JWT_REFRESH_SECRET="your-refresh-secret"
-
-# Email
-SMTP_HOST="smtp.gmail.com"
-SMTP_USER="your-email@gmail.com"
-SMTP_PASS="your-app-password"
-
-# Приложение
-APP_PORT=3000
-APP_ENV="development"
-```
-
-## 📅 Планировщик задач
-
-### Автоматические задачи
-- **03:00** - Обновление астрологических данных
-- **04:00** - Расчет daily energy score для всех пользователей
-- **05:00** - Генерация рекомендаций дня
-
-## 🧪 Тестирование
-
-```bash
-# Unit тесты
-npm run test
-
-# E2E тесты
-npm run test:e2e
-
-# Покрытие кода
-npm run test:cov
-```
-
-## 📚 Swagger документация
-
-После запуска приложения документация доступна по адресу:
-```
-http://localhost:3000/api
-```
-
-## 🚀 Развертывание
-
-### Docker
-```bash
-# Сборка образа
-docker build -t mystical-astro .
-
-# Запуск контейнера
-docker run -p 3000:3000 mystical-astro
-```
-
-### Docker Compose
+### 4. Запуск базы данных
 ```bash
 docker-compose up -d
 ```
 
-## 🔮 Основные функции
+### 5. Миграции и сид данных
+```bash
+npm run prisma:migrate
+npm run prisma:seed
+```
 
-### 1. Энергетический движок
-- Расчет daily energy score на основе:
-  - Лунных фаз
-  - Знака зодиака пользователя
-  - Элемента (огонь/земля/воздух/вода)
-  - Времени года и дня недели
+### 6. Запуск сервера
+```bash
+npm run start:dev
+# или
+yarn start:dev
+```
 
-### 2. Астрологические расчеты
-- Точные лунные фазы через Swiss Ephemeris
-- Влияния на разные сферы жизни
-- Рекомендации по активности
+Сервер будет доступен на `http://localhost:3010`
 
-### 3. Персональные рекомендации
-- Ритуал дня
-- Камень дня
-- Рецепт настоя
-- Энергетические советы
+## 🌐 CORS настройка
 
-### 4. Система достижений
-- Отслеживание прогресса
-- Бейджи и достижения
-- Streaks и статистика
+Для работы с фронтендом на `http://localhost:5173` убедитесь, что в `.env` файле настроен CORS:
 
-## 🤝 Вклад в проект
+```env
+ALLOWED_ORIGINS="http://localhost:5173,http://localhost:3000"
+```
 
-1. Fork репозитория
-2. Создайте feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit изменения (`git commit -m 'Add amazing feature'`)
-4. Push в branch (`git push origin feature/amazing-feature`)
-5. Откройте Pull Request
+### Тестирование CORS
+```bash
+./test-cors.sh
+```
 
-## 📄 Лицензия
+## 📚 API документация
 
-Этот проект находится под лицензией MIT. См. файл `LICENSE` для деталей.
+Swagger документация доступна по адресу: `http://localhost:3010/api`
 
-## 🆘 Поддержка
+## 🔧 Основные команды
 
-Если у вас есть вопросы или проблемы:
-- Создайте Issue в GitHub
-- Обратитесь к документации API
-- Проверьте логи приложения
+```bash
+# Разработка
+npm run start:dev
 
-## 🔮 Будущие улучшения
+# Продакшн
+npm run start:prod
 
-- [ ] ML-модели для рекомендаций
-- [ ] Интеграция с ClickHouse для аналитики
-- [ ] Микросервисная архитектура
-- [ ] GraphQL API
-- [ ] Мобильное приложение
-- [ ] Интеграция с календарями
-- [ ] Социальные функции
+# Миграции
+npm run prisma:migrate
+npm run prisma:seed
 
----
+# Тесты
+npm run test
+npm run test:e2e
+```
 
-**Создано с ❤️ для астрологического сообщества**
+## 📁 Структура проекта
+
+```
+src/
+├── modules/           # Основные модули
+│   ├── auth/         # Аутентификация
+│   ├── users/        # Пользователи
+│   ├── astro/        # Астрологические расчеты
+│   ├── content/      # Контент
+│   └── ...
+├── common/            # Общие утилиты
+├── config/            # Конфигурация
+└── main.ts            # Точка входа
+```
+
+## 🐳 Docker
+
+```bash
+# Запуск всех сервисов
+docker-compose up -d
+
+# Остановка
+docker-compose down
+
+# Просмотр логов
+docker-compose logs -f
+```
+
+## 🔍 Отладка
+
+### Логи
+```bash
+# Логи приложения
+npm run start:dev
+
+# Логи Docker
+docker-compose logs -f app
+```
+
+### База данных
+```bash
+# Подключение к PostgreSQL
+docker exec -it mystical-astro-postgres psql -U postgres -d mystical_astro
+
+# Просмотр таблиц
+\dt
+```
+
+## 🚨 Устранение неполадок
+
+### CORS ошибки
+1. Проверьте переменную `ALLOWED_ORIGINS` в `.env`
+2. Перезапустите сервер
+3. Используйте `./test-cors.sh` для диагностики
+
+### Проблемы с базой данных
+1. Убедитесь, что PostgreSQL запущен: `docker-compose ps`
+2. Проверьте подключение: `npm run prisma:studio`
+3. Выполните миграции: `npm run prisma:migrate`
+
+### Проблемы с Redis/RabbitMQ
+1. Проверьте статус сервисов: `docker-compose ps`
+2. Просмотрите логи: `docker-compose logs redis rabbitmq`

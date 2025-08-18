@@ -21,7 +21,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:seed:mock": "ts-node prisma/seed-mock.ts"
   },
   "dependencies": {
     "@bull-board/express": "^5.0.0",
@@ -36,7 +37,9 @@
     "@nestjs/swagger": "^7.0.0",
     "@nestjs/terminus": "^10.0.0",
     "@prisma/client": "^5.0.0",
+    "@types/bcrypt": "^6.0.0",
     "amqplib": "^0.10.3",
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "bull": "^4.11.0",
     "class-transformer": "^0.5.1",

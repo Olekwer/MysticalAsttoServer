@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,42 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Пользователи
 model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  password          String?
-  firstName         String?
-  lastName          String?
-  birthDate         DateTime?
-  birthTime         String?
-  birthPlace        String?
-  zodiacSign        ZodiacSign?
-  element           Element?
-  timezone          String   @default("UTC")
-  language          String   @default("ru")
-  isEmailVerified   Boolean  @default(false)
-  isPremium         Boolean  @default(false)
-  magicLinkToken    String?
-  magicLinkExpires  DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  // Связи
-  profile           UserProfile?
-  userRituals       UserRitual[]
-  journalEntries    JournalEntry[]
-  achievements      Achievement[]
-  subscriptions     Subscription[]
-  notifications     Notification[]
+  id               String           @id @default(cuid())
+  email            String           @unique
+  password         String?
+  firstName        String?
+  lastName         String?
+  birthDate        DateTime?
+  birthTime        String?
+  birthPlace       String?
+  zodiacSign       ZodiacSign?
+  element          Element?
+  timezone         String           @default("UTC")
+  language         String           @default("ru")
+  isEmailVerified  Boolean          @default(false)
+  isPremium        Boolean          @default(false)
+  magicLinkToken   String?
+  magicLinkExpires DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  achievements     Achievement[]
   energyScores     EnergyScore[]
-  recommendations   Recommendation[]
+  journalEntries   JournalEntry[]
+  notifications    Notification[]
   progress         Progress[]
+  recommendations  Recommendation[]
+  subscriptions    Subscription[]
+  profile          UserProfile?
+  userRituals      UserRitual[]
 
   @@map("users")
 }
 
-// Профиль пользователя
 model UserProfile {
   id          String   @id @default(cuid())
   userId      String   @unique
@@ -54,13 +47,203 @@ model UserProfile {
   preferences Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_profiles")
 }
 
-// Знаки зодиака
+model Ritual {
+  id                String              @id @default(cuid())
+  title             String
+  description       String?
+  steps             Json
+  duration          Int
+  category          String
+  difficulty        String
+  isPremium         Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  RitualToRitualTag RitualToRitualTag[]
+  userRituals       UserRitual[]
+
+  @@map("rituals")
+}
+
+model RitualTag {
+  id                String              @id @default(cuid())
+  name              String              @unique
+  color             String?
+  RitualToRitualTag RitualToRitualTag[]
+
+  @@map("ritual_tags")
+}
+
+model UserRitual {
+  id          String       @id @default(cuid())
+  userId      String
+  ritualId    String
+  status      RitualStatus @default(ACTIVE)
+  progress    Int          @default(0)
+  startedAt   DateTime     @default(now())
+  completedAt DateTime?
+  notes       String?
+  ritual      Ritual       @relation(fields: [ritualId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, ritualId])
+  @@map("user_rituals")
+}
+
+model MoonPhase {
+  id           String        @id @default(cuid())
+  date         DateTime      @unique
+  phase        MoonPhaseType
+  illumination Float
+  moonrise     DateTime?
+  moonset      DateTime?
+  createdAt    DateTime      @default(now())
+
+  @@map("moon_phases")
+}
+
+model EnergyScore {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  score     Float
+  factors   Json
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("energy_scores")
+}
+
+model Recommendation {
+  id        String             @id @default(cuid())
+  userId    String
+  date      DateTime
+  type      RecommendationType
+  content   Json
+  priority  Int                @default(1)
+  isRead    Boolean            @default(false)
+  createdAt DateTime           @default(now())
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, type])
+  @@map("recommendations")
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  content   String
+  mood      String?
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("journal_entries")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  title       String
+  description String
+  icon        String?
+  unlockedAt  DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("achievements")
+}
+
+model Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  value     Int
+  date      DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, date])
+  @@map("progress")
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  plan      String
+  status    SubscriptionStatus
+  startDate DateTime
+  endDate   DateTime?
+  stripeId  String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  userId      String
+  type        String
+  title       String
+  message     String
+  isRead      Boolean   @default(false)
+  scheduledAt DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Stone {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  properties  Json
+  zodiacSigns ZodiacSign[]
+  elements    Element[]
+  isPremium   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("stones")
+}
+
+model TeaRecipe {
+  id           String       @id @default(cuid())
+  name         String
+  description  String?
+  ingredients  Json
+  instructions String
+  benefits     String[]
+  zodiacSigns  ZodiacSign[]
+  elements     Element[]
+  isPremium    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@map("tea_recipes")
+}
+
+model RitualToRitualTag {
+  A           String
+  B           String
+  rituals     Ritual    @relation(fields: [A], references: [id], onDelete: Cascade)
+  ritual_tags RitualTag @relation(fields: [B], references: [id], onDelete: Cascade)
+
+  @@unique([A, B], map: "_RitualToRitualTag_AB_unique")
+  @@index([B], map: "_RitualToRitualTag_B_index")
+  @@map("_RitualToRitualTag")
+}
+
 enum ZodiacSign {
   ARIES
   TAURUS
@@ -76,7 +259,6 @@ enum ZodiacSign {
   PISCES
 }
 
-// Элементы
 enum Element {
   FIRE
   EARTH
@@ -84,72 +266,11 @@ enum Element {
   WATER
 }
 
-// Ритуалы
-model Ritual {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  steps       Json
-  duration    Int      // в минутах
-  category    String
-  difficulty  String
-  isPremium   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Связи
-  userRituals UserRitual[]
-  tags        RitualTag[]
-
-  @@map("rituals")
-}
-
-// Теги ритуалов
-model RitualTag {
-  id       String @id @default(cuid())
-  name     String @unique
-  color    String?
-  rituals  Ritual[]
-
-  @@map("ritual_tags")
-}
-
-// Пользовательские ритуалы
-model UserRitual {
-  id        String   @id @default(cuid())
-  userId    String
-  ritualId  String
-  status    RitualStatus @default(ACTIVE)
-  progress  Int      @default(0)
-  startedAt DateTime @default(now())
-  completedAt DateTime?
-  notes     String?
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ritual    Ritual   @relation(fields: [ritualId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, ritualId])
-  @@map("user_rituals")
-}
-
 enum RitualStatus {
   ACTIVE
   PAUSED
   COMPLETED
   CANCELLED
-}
-
-// Лунные фазы
-model MoonPhase {
-  id          String   @id @default(cuid())
-  date        DateTime @unique
-  phase       MoonPhaseType
-  illumination Float
-  moonrise    DateTime?
-  moonset     DateTime?
-  createdAt   DateTime @default(now())
-
-  @@map("moon_phases")
 }
 
 enum MoonPhaseType {
@@ -163,38 +284,6 @@ enum MoonPhaseType {
   WANING_CRESCENT
 }
 
-// Энергетические показатели
-model EnergyScore {
-  id        String   @id @default(cuid())
-  userId    String
-  date      DateTime
-  score     Float
-  factors   Json
-  createdAt DateTime @default(now())
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, date])
-  @@map("energy_scores")
-}
-
-// Рекомендации
-model Recommendation {
-  id          String   @id @default(cuid())
-  userId      String
-  date        DateTime
-  type        RecommendationType
-  content     Json
-  priority    Int      @default(1)
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, date, type])
-  @@map("recommendations")
-}
-
 enum RecommendationType {
   RITUAL_OF_DAY
   STONE_OF_DAY
@@ -203,120 +292,9 @@ enum RecommendationType {
   ASTROLOGICAL_PATH
 }
 
-// Дневник
-model JournalEntry {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String?
-  content   String
-  mood      String?
-  tags      String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("journal_entries")
-}
-
-// Достижения
-model Achievement {
-  id          String   @id @default(cuid())
-  userId      String
-  type        String
-  title       String
-  description String
-  icon        String?
-  unlockedAt  DateTime @default(now())
-
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("achievements")
-}
-
-// Прогресс
-model Progress {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String
-  value     Int
-  date      DateTime
-  createdAt DateTime @default(now())
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, type, date])
-  @@map("progress")
-}
-
-// Подписки
-model Subscription {
-  id            String   @id @default(cuid())
-  userId        String
-  plan          String
-  status        SubscriptionStatus
-  startDate     DateTime
-  endDate       DateTime?
-  stripeId      String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("subscriptions")
-}
-
 enum SubscriptionStatus {
   ACTIVE
   CANCELLED
   EXPIRED
   PENDING
 }
-
-// Уведомления
-model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  scheduledAt DateTime?
-  createdAt DateTime @default(now())
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("notifications")
-}
-
-// Камни
-model Stone {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  properties  Json
-  zodiacSigns ZodiacSign[]
-  elements    Element[]
-  isPremium   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("stones")
-}
-
-// Рецепты настоев
-model TeaRecipe {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  ingredients Json
-  instructions String
-  benefits    String[]
-  zodiacSigns ZodiacSign[]
-  elements    Element[]
-  isPremium   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("tea_recipes")
-} 
