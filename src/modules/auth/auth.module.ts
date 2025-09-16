@@ -4,8 +4,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../../common/email/email.module';
+import { PrismaService } from '../../common/database/prisma.service';
 // import { I18nModule } from '../../common/i18n/i18n.module';
 
 @Module({
@@ -24,7 +27,7 @@ import { EmailModule } from '../../common/email/email.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy, LocalStrategy, PrismaService],
   exports: [AuthService],
 })
 export class AuthModule {} 

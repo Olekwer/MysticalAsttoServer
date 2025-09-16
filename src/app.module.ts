@@ -17,6 +17,7 @@ import { ProgressModule } from './modules/progress/progress.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { LocationModule } from './modules/location/location.module';
 import { HealthModule } from './health/health.module';
 
     // Common modules
@@ -71,6 +72,7 @@ import { I18nModule } from './common/i18n/i18n.module';
     SubscriptionsModule,
     NotificationsModule,
     AnalyticsModule,
+    LocationModule,
     HealthModule,
   ],
 })

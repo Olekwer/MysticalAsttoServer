@@ -35,6 +35,7 @@ model User {
   subscriptions    Subscription[]
   profile          UserProfile?
   userRituals      UserRitual[]
+  userPowerPlaces  UserPowerPlace[]
 
   @@map("users")
 }
@@ -297,4 +298,34 @@ enum SubscriptionStatus {
   CANCELLED
   EXPIRED
   PENDING
+}
+
+model PowerPlace {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  latitude    Float
+  longitude   Float
+  type        String   @default("mystical") // mystical, natural, historical, etc.
+  energyLevel Int      @default(5) // 1-10 scale
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userPlaces  UserPowerPlace[]
+
+  @@map("power_places")
+}
+
+model UserPowerPlace {
+  id           String     @id @default(cuid())
+  userId       String
+  powerPlaceId String
+  distance     Float      // Distance in kilometers
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  powerPlace   PowerPlace @relation(fields: [powerPlaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, powerPlaceId])
+  @@map("user_power_places")
 }

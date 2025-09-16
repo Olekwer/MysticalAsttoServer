@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../common/database/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { LocationService } from '../location/location.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private locationService: LocationService
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     return this.prisma.user.create({
@@ -29,24 +33,11 @@ export class UsersService {
       where: { id },
       include: {
         profile: true,
-        userRituals: {
-          include: {
-            ritual: true,
-          },
-        },
-        journalEntries: {
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-        },
-        achievements: {
-          take: 10,
-          orderBy: { unlockedAt: 'desc' },
-        },
       },
     });
 
     if (!user) {
-      throw new NotFoundException('Пользователь не найден');
+      throw new NotFoundException('User not found');
     }
 
     return user;
@@ -64,9 +55,23 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
 
+    // Prepare data for update
+    const updateData: any = { ...updateUserDto };
+
+    // If birthDate is being updated, automatically calculate zodiac sign and element
+    if (updateUserDto.birthDate) {
+      const birthDate = new Date(updateUserDto.birthDate);
+      const zodiacSign = await this.calculateZodiacSign(birthDate);
+      const element = await this.calculateElement(zodiacSign);
+      
+      updateData.zodiacSign = zodiacSign as any;
+      updateData.element = element as any;
+      updateData.birthDate = birthDate; // Convert to Date object
+    }
+
     return this.prisma.user.update({
       where: { id },
-      data: updateUserDto,
+      data: updateData,
       include: {
         profile: true,
       },
@@ -124,5 +129,91 @@ export class UsersService {
     if (waterSigns.includes(zodiacSign)) return 'WATER';
     
     return 'FIRE'; // fallback
+  }
+
+  async getDashboardData(userId: string) {
+    try {
+      // Get basic user data
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          zodiacSign: true,
+          element: true,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      // Get nearest power place from user's location-based places
+      const nearestPowerPlace = await this.locationService.getUserNearestPowerPlace(userId);
+      
+      // Fallback to zodiac-based power place if no location-based places found
+      const powerPlace = nearestPowerPlace ? {
+        name: nearestPowerPlace.name,
+        distance: nearestPowerPlace.distance
+      } : this.getPowerPlaceForSign(user.zodiacSign);
+      
+      // Get power stone based on zodiac sign
+      const powerStone = this.getPowerStoneForSign(user.zodiacSign);
+
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          zodiacSign: user.zodiacSign,
+          element: user.element,
+        },
+        powerPlace,
+        powerStone,
+        progress: {
+          ritualsCompleted: 0, // Simplified for now
+        },
+      };
+    } catch (error) {
+      console.error('Error in getDashboardData:', error);
+      throw error;
+    }
+  }
+
+  private getPowerPlaceForSign(zodiacSign: string) {
+    const powerPlaces: { [key: string]: { name: string; distance: number } } = {
+      'ARIES': { name: 'Mount Olympus, Greece', distance: 25 },
+      'TAURUS': { name: 'Stonehenge, UK', distance: 18 },
+      'GEMINI': { name: 'Machu Picchu, Peru', distance: 32 },
+      'CANCER': { name: 'Lake Błędno, Poland', distance: 14 },
+      'LEO': { name: 'Pyramids of Giza, Egypt', distance: 22 },
+      'VIRGO': { name: 'Glastonbury Tor, UK', distance: 16 },
+      'LIBRA': { name: 'Temple of Delphi, Greece', distance: 28 },
+      'SCORPIO': { name: 'Sedona Vortex, USA', distance: 35 },
+      'SAGITTARIUS': { name: 'Uluru, Australia', distance: 42 },
+      'CAPRICORN': { name: 'Mount Fuji, Japan', distance: 19 },
+      'AQUARIUS': { name: 'Crystal Cave, Iceland', distance: 26 },
+      'PISCES': { name: 'Lake Błędno, Poland', distance: 14 },
+    };
+    
+    return powerPlaces[zodiacSign] || powerPlaces['PISCES'];
+  }
+
+  private getPowerStoneForSign(zodiacSign: string) {
+    const powerStones: { [key: string]: { name: string; description: string } } = {
+      'ARIES': { name: 'Carnelian', description: 'stone of courage and energy' },
+      'TAURUS': { name: 'Rose Quartz', description: 'stone of love and harmony' },
+      'GEMINI': { name: 'Citrine', description: 'stone of communication and clarity' },
+      'CANCER': { name: 'Moonstone', description: 'stone of intuition and emotions' },
+      'LEO': { name: 'Sunstone', description: 'stone of leadership and confidence' },
+      'VIRGO': { name: 'Peridot', description: 'stone of healing and growth' },
+      'LIBRA': { name: 'Opal', description: 'stone of balance and harmony' },
+      'SCORPIO': { name: 'Obsidian', description: 'stone of transformation and protection' },
+      'SAGITTARIUS': { name: 'Turquoise', description: 'stone of wisdom and truth' },
+      'CAPRICORN': { name: 'Garnet', description: 'stone of strength and determination' },
+      'AQUARIUS': { name: 'Amethyst', description: 'stone of spirituality and intuition' },
+      'PISCES': { name: 'Aquamarine', description: 'stone of peace and tranquility' },
+    };
+    
+    return powerStones[zodiacSign] || powerStones['PISCES'];
   }
 } 

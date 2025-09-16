@@ -7,7 +7,7 @@ export class RitualsService {
 
   // Stub for basic functionality
   async findAll() {
-    return this.prisma.ritual.findMany();
+    return this.prisma.ritual.findMany({});
   }
 
   async findOne(id: string) {

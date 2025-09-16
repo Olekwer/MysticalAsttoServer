@@ -4,14 +4,14 @@ import { ZodiacSign, Element } from '@prisma/client';
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'Email пользователя',
+    description: 'User email',
     example: 'user@example.com',
   })
   @IsEmail()
   email: string;
 
   @ApiPropertyOptional({
-    description: 'Пароль пользователя (опционально для magic link)',
+    description: 'User password (optional for magic link)',
     example: 'password123',
     minLength: 6,
   })
@@ -20,23 +20,23 @@ export class CreateUserDto {
   password?: string;
 
   @ApiPropertyOptional({
-    description: 'Имя пользователя',
-    example: 'Иван',
+    description: 'User first name',
+    example: 'John',
   })
   @IsOptional()
   @IsString()
   firstName?: string;
 
   @ApiPropertyOptional({
-    description: 'Фамилия пользователя',
-    example: 'Иванов',
+    description: 'User last name',
+    example: 'Doe',
   })
   @IsOptional()
   @IsString()
   lastName?: string;
 
   @ApiPropertyOptional({
-    description: 'Дата рождения',
+    description: 'Birth date',
     example: '1990-01-01',
   })
   @IsOptional()
@@ -44,7 +44,7 @@ export class CreateUserDto {
   birthDate?: string;
 
   @ApiPropertyOptional({
-    description: 'Время рождения',
+    description: 'Birth time',
     example: '12:00',
   })
   @IsOptional()
@@ -52,15 +52,15 @@ export class CreateUserDto {
   birthTime?: string;
 
   @ApiPropertyOptional({
-    description: 'Место рождения',
-    example: 'Москва, Россия',
+    description: 'Birth place',
+    example: 'New York, USA',
   })
   @IsOptional()
   @IsString()
   birthPlace?: string;
 
   @ApiPropertyOptional({
-    description: 'Знак зодиака',
+    description: 'Zodiac sign',
     enum: ZodiacSign,
     example: ZodiacSign.ARIES,
   })
@@ -69,7 +69,7 @@ export class CreateUserDto {
   zodiacSign?: ZodiacSign;
 
   @ApiPropertyOptional({
-    description: 'Элемент',
+    description: 'Element',
     enum: Element,
     example: Element.FIRE,
   })
@@ -78,8 +78,8 @@ export class CreateUserDto {
   element?: Element;
 
   @ApiPropertyOptional({
-    description: 'Часовой пояс',
-    example: 'Europe/Moscow',
+    description: 'Timezone',
+    example: 'America/New_York',
     default: 'UTC',
   })
   @IsOptional()
@@ -87,9 +87,9 @@ export class CreateUserDto {
   timezone?: string;
 
   @ApiPropertyOptional({
-    description: 'Язык',
-    example: 'ru',
-    default: 'ru',
+    description: 'Language',
+    example: 'en',
+    default: 'en',
   })
   @IsOptional()
   @IsString()

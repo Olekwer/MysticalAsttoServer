@@ -22,6 +22,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "db:seed": "ts-node prisma/seed.ts",
+    "db:seed-power-places": "ts-node prisma/seed-power-places.ts",
     "db:seed:mock": "ts-node prisma/seed-mock.ts"
   },
   "dependencies": {

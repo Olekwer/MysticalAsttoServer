@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystical Astro - Test Frontend</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-badge {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .main-content {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .card-icon.purple {
+            background: linear-gradient(45deg, #8b5cf6, #a855f7);
+        }
+        
+        .card-icon.red {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+        }
+        
+        .card-icon.pink {
+            background: linear-gradient(45deg, #ec4899, #f472b6);
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .card-content {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .card-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .card-button.red {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+        }
+        
+        .card-button.purple {
+            background: linear-gradient(45deg, #8b5cf6, #a855f7);
+        }
+        
+        .card-button.pink {
+            background: linear-gradient(45deg, #ec4899, #f472b6);
+        }
+        
+        .card-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(45deg, #8b5cf6, #a855f7);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .error-message {
+            color: #ef4444;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .loading {
+            text-align: center;
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Energy Dashboard Styles */
+        .energy-dashboard {
+            margin-bottom: 3rem;
+        }
+
+        .energy-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .energy-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .energy-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .energy-progress {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .energy-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .energy-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+            width: var(--energy-width, 0%);
+        }
+
+        .energy-percentage {
+            position: absolute;
+            right: 0;
+            top: -25px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .energy-message, .moon-message, .ritual-message {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+        }
+
+        .moon-phase, .ritual-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .weekly-insight {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .insight-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .insight-text {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="app">
+            <!-- Login form will be shown initially -->
+            <div id="login-section">
+                <div class="header">
+                    <div class="logo">
+                        <div class="logo-icon">⭐</div>
+                        <div class="logo-text">Earth's Core</div>
+                    </div>
+                </div>
+                
+                <div class="main-content">
+                    <h1 class="welcome-title">Welcome to Your Power Zone</h1>
+                    <p class="welcome-subtitle">Your energy has its place. Enter the path of healing.</p>
+                </div>
+                
+                <div class="login-form">
+                    <h2 style="text-align: center; margin-bottom: 2rem;">Login</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" id="email" class="form-input" placeholder="Enter your email" value="test@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">Password</label>
+                            <input type="password" id="password" class="form-input" placeholder="Enter your password" value="test123" required>
+                        </div>
+                        <button type="submit" class="login-button">Login</button>
+                    </form>
+                    <div id="error-message" class="error-message" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <!-- Dashboard will be shown after login -->
+            <div id="dashboard-section" style="display: none;">
+                <div class="header">
+                    <div class="logo">
+                        <div class="logo-icon">⭐</div>
+                        <div class="logo-text">Earth's Core</div>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-badge" id="user-badge">Leo • Fire</div>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+                
+                <div class="main-content">
+                    <h1 class="welcome-title" id="energy-title">Twoja energia dziś</h1>
+                    <p class="welcome-subtitle" id="energy-date">Loading date...</p>
+                </div>
+                
+                <!-- Energy Dashboard -->
+                <div class="energy-dashboard" id="energy-dashboard" style="display: none;">
+                    <div class="energy-row">
+                        <div class="energy-card">
+                            <h3 class="energy-card-title">Poziom energii</h3>
+                            <div class="energy-progress">
+                                <div class="energy-bar" id="energy-bar"></div>
+                                <span class="energy-percentage" id="energy-percentage">0%</span>
+                            </div>
+                            <p class="energy-message" id="energy-message">Loading...</p>
+                        </div>
+                        
+                        <div class="energy-card">
+                            <h3 class="energy-card-title">🌙 Faza księżyca</h3>
+                            <div class="moon-phase" id="moon-phase">Loading...</div>
+                            <p class="moon-message" id="moon-message">Loading...</p>
+                        </div>
+                        
+                        <div class="energy-card">
+                            <h3 class="energy-card-title">✨ Rytuał dnia</h3>
+                            <div class="ritual-name" id="ritual-name">Loading...</div>
+                            <p class="ritual-message" id="ritual-message">Loading...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="weekly-insight">
+                        <h3 class="insight-title">Tygodniowy wgląd:</h3>
+                        <p class="insight-text" id="insight-text">Loading...</p>
+                    </div>
+                </div>
+                
+                <!-- Personal Dashboard -->
+                <div class="cards-grid" id="dashboard-cards">
+                    <div class="loading">🔮 Loading your mystical profile...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3010';
+        let authToken = null;
+        let user = null;
+
+        // Login form handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                authToken = data.accessToken;
+                user = data.user;
+                
+                // Show dashboard
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('dashboard-section').style.display = 'block';
+                
+                // Update user badge
+                document.getElementById('user-badge').textContent = `${user.zodiacSign} • ${user.element}`;
+                
+                // Load dashboard data
+                await loadDashboardData();
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = 'Login failed. Please check your credentials.';
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            // Load energy dashboard first
+            await loadEnergyDashboard();
+            
+            // Then load personal dashboard
+            const cardsDiv = document.getElementById('dashboard-cards');
+            
+            try {
+                // Try to get data from the simple dashboard endpoint
+                const response = await fetch(`${API_BASE_URL}/users/simple-dashboard`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Create cards
+                cardsDiv.innerHTML = `
+                    <div class="card">
+                        <div class="card-icon purple">⭐</div>
+                        <h3 class="card-title">Your Sign</h3>
+                        <div class="card-content">${data.user.zodiacSign}</div>
+                        <div class="card-description">${data.user.element}</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon red">📍</div>
+                        <h3 class="card-title">Power Point</h3>
+                        <div class="card-content">${data.powerPlace.name}, ${data.powerPlace.distance} km</div>
+                        <button class="card-button red">See on map</button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon purple">💎</div>
+                        <h3 class="card-title">Power Stone</h3>
+                        <div class="card-content">${data.powerStone.name}</div>
+                        <div class="card-description">${data.powerStone.description}</div>
+                        <button class="card-button purple">Learn more</button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon pink">❤️</div>
+                        <h3 class="card-title">Progress</h3>
+                        <div class="card-content">${data.progress.ritualsCompleted} rituals completed</div>
+                        <button class="card-button pink">My path</button>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                cardsDiv.innerHTML = `
+                    <div class="card">
+                        <div class="card-icon purple">⭐</div>
+                        <h3 class="card-title">Your Sign</h3>
+                        <div class="card-content">LEO</div>
+                        <div class="card-description">Fire</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon red">📍</div>
+                        <h3 class="card-title">Power Point</h3>
+                        <div class="card-content">Pyramids of Giza, Egypt, 22 km</div>
+                        <button class="card-button red">See on map</button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon purple">💎</div>
+                        <h3 class="card-title">Power Stone</h3>
+                        <div class="card-content">Sunstone</div>
+                        <div class="card-description">stone of leadership and confidence</div>
+                        <button class="card-button purple">Learn more</button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon pink">❤️</div>
+                        <h3 class="card-title">Progress</h3>
+                        <div class="card-content">0 rituals completed</div>
+                        <button class="card-button pink">My path</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Load energy dashboard data
+        async function loadEnergyDashboard() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health/demo-energy`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Update date
+                document.getElementById('energy-date').textContent = data.date.fullDate;
+                
+                // Update energy level
+                const energyPercentage = data.energy.percentage;
+                document.getElementById('energy-percentage').textContent = `${energyPercentage}%`;
+                document.getElementById('energy-message').textContent = data.energy.message;
+                
+                // Animate energy bar
+                setTimeout(() => {
+                    const energyBar = document.getElementById('energy-bar');
+                    if (energyBar) {
+                        energyBar.style.setProperty('--energy-width', `${energyPercentage}%`);
+                    }
+                }, 500);
+                
+                // Update moon phase
+                document.getElementById('moon-phase').textContent = data.moon.phase;
+                document.getElementById('moon-message').textContent = data.moon.message;
+                
+                // Update ritual
+                document.getElementById('ritual-name').textContent = data.ritual.name;
+                document.getElementById('ritual-message').textContent = data.ritual.message;
+                
+                // Update insight
+                document.getElementById('insight-text').textContent = data.weeklyInsight.text;
+                
+                // Show energy dashboard
+                document.getElementById('energy-dashboard').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading energy dashboard:', error);
+                // Show fallback data
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('pl-PL', { 
+                    weekday: 'long', 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+                
+                document.getElementById('energy-date').textContent = dateStr;
+                document.getElementById('energy-percentage').textContent = '90%';
+                document.getElementById('energy-message').textContent = 'Środa to Twój dzień mocy';
+                document.getElementById('moon-phase').textContent = 'Przybywająca - energia rośnie';
+                document.getElementById('moon-message').textContent = 'Energia lunarna wspiera Twoje intencje';
+                document.getElementById('ritual-name').textContent = 'Picie świętej wody';
+                document.getElementById('ritual-message').textContent = 'Idealny na dzisiejszą energię';
+                document.getElementById('insight-text').textContent = 'Obserwuj rytmy swojej energii. Każdy dzień niesie inne dary i wyzwania. Dostosuj swoją praktykę do naturalnych cykli.';
+                
+                document.getElementById('energy-dashboard').style.display = 'block';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            authToken = null;
+            user = null;
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('dashboard-section').style.display = 'none';
+            document.getElementById('error-message').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
