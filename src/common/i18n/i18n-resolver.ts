@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { I18nResolver } from 'nestjs-i18n';
-import { Request } from 'express';
-
 @Injectable()
 export class I18nResolverService implements I18nResolver {
   resolve(context: any): string | undefined {

@@ -73,7 +73,7 @@ export class EmailService {
 
   private async generateMagicLinkHTML(magicLink: string, language: string): Promise<string> {
     const t = (key: string) => 'common.' + key; // Временное отключение перевода
-    
+    console.log(language);
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #6b46c1;">🔮 Mystical Astro</h2>
@@ -127,7 +127,7 @@ export class EmailService {
 
   private async generateDailyDigestHTML(userData: any, recommendations: any, language: string = 'en'): Promise<string> {
     const t = (key: string) => 'common.' + key; // Временное отключение перевода
-    
+    console.log(language);
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #6b46c1;">🌙 ${await t('daily_digest_subject')}</h2>

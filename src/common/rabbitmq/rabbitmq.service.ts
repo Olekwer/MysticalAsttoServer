@@ -33,12 +33,12 @@ export class RabbitMQService implements OnModuleDestroy {
     try {
       if (this.isRabbitMQAvailable) {
         // Здесь был бы реальный RabbitMQ код
-        console.log(`📥 Consumer registered for queue ${queue}`);
+        console.log(`Consumer registered for queue ${callback}`);
       } else {
-        console.log(`📥 Mock: Consumer registered for queue ${queue}`);
+        console.log(`Mock: Consumer registered for queue ${queue}`);
       }
     } catch (error) {
-      console.error('❌ Error consuming message:', error);
+      console.error('Error consuming message:', error);
     }
   }
 

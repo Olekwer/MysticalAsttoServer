@@ -27,7 +27,7 @@ import { RedisModule } from './common/redis/redis.module';
 import { RabbitMQModule } from './common/rabbitmq/rabbitmq.module';
 import { StorageModule } from './common/storage/storage.module';
 import { EmailModule } from './common/email/email.module';
-import { I18nModule } from './common/i18n/i18n.module';
+// import { I18nModule } from './common/i18n/i18n.module';
 
 @Module({
   imports: [
