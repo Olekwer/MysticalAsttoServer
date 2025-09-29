@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystical Astro - Energy Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .moon-toggle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .moon-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .main-content {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+        }
+        
+        /* Energy Dashboard Styles */
+        .energy-dashboard {
+            margin-bottom: 3rem;
+        }
+
+        .energy-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .energy-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .energy-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .energy-progress {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .energy-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .energy-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+            width: 90%;
+            animation: energyFill 2s ease-in-out;
+        }
+
+        @keyframes energyFill {
+            from { width: 0%; }
+            to { width: 90%; }
+        }
+
+        .energy-percentage {
+            position: absolute;
+            right: 0;
+            top: -25px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .energy-message, .moon-message, .ritual-message {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+        }
+
+        .moon-phase, .ritual-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .weekly-insight {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .insight-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .insight-text {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .login-section {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .error-message {
+            color: #ef4444;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="login-section">
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon">⭐</div>
+                    <div class="logo-text">Mystical Astro</div>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <h1 class="welcome-title">Twoja energia dziś</h1>
+                <p class="welcome-subtitle">Twoja energia ma swoje miejsce. Wstań na ścieżkę uzdrowienia.</p>
+            </div>
+            
+            <div class="login-section">
+                <h2 class="login-title">Zaloguj się</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" class="form-input" placeholder="Wprowadź swój email" value="test@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Hasło</label>
+                        <input type="password" id="password" class="form-input" placeholder="Wprowadź swoje hasło" value="test123" required>
+                    </div>
+                    <button type="submit" class="login-button">Zaloguj się</button>
+                </form>
+                <div id="error-message" class="error-message hidden"></div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="hidden">
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon">⭐</div>
+                    <div class="logo-text">Mystical Astro</div>
+                </div>
+                <div class="moon-toggle">🌙</div>
+            </div>
+            
+            <div class="main-content">
+                <h1 class="welcome-title">Twoja energia dziś</h1>
+                <p class="welcome-subtitle" id="energy-date">środa, 10 września 2025</p>
+            </div>
+            
+            <!-- Energy Dashboard -->
+            <div class="energy-dashboard">
+                <div class="energy-row">
+                    <div class="energy-card">
+                        <h3 class="energy-card-title">Poziom energii</h3>
+                        <div class="energy-progress">
+                            <div class="energy-bar"></div>
+                            <span class="energy-percentage">90%</span>
+                        </div>
+                        <p class="energy-message">Środa to Twój dzień mocy</p>
+                    </div>
+                    
+                    <div class="energy-card">
+                        <h3 class="energy-card-title">🌙 Faza księżyca</h3>
+                        <div class="moon-phase">Przybywająca - energia rośnie</div>
+                        <p class="moon-message">Energia lunarna wspiera Twoje intencje</p>
+                    </div>
+                    
+                    <div class="energy-card">
+                        <h3 class="energy-card-title">✨ Rytuał dnia</h3>
+                        <div class="ritual-name">Picie świętej wody</div>
+                        <p class="ritual-message">Idealny na dzisiejszą energię</p>
+                    </div>
+                </div>
+                
+                <div class="weekly-insight">
+                    <h3 class="insight-title">Tygodniowy wgląd:</h3>
+                    <p class="insight-text">Obserwuj rytmy swojej energii. Każdy dzień niesie inne dary i wyzwania. Dostosuj swoją praktykę do naturalnych cykli.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3010';
+        let authToken = null;
+        let user = null;
+
+        // Login form handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                authToken = data.accessToken;
+                user = data.user;
+                
+                // Show dashboard
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = 'Logowanie nie powiodło się. Sprawdź swoje dane.';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        // Logout function
+        function logout() {
+            authToken = null;
+            user = null;
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('error-message').classList.add('hidden');
+        }
+
+        // Add logout functionality to moon toggle
+        document.querySelector('.moon-toggle').addEventListener('click', logout);
+    </script>
+</body>
+</html>

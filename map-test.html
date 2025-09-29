@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapbox Test - Power Point Location</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .power-place-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .map-container {
+            height: 500px;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn {
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            color: white;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: linear-gradient(45deg, #1d4ed8, #3b82f6);
+            transform: scale(1.05);
+        }
+        .power-places {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 Power Point Locations Map</h1>
+            <p>Click on any power place to view it on the map</p>
+        </div>
+
+        <div class="power-places">
+            <div class="power-place-card">
+                <h3>🏔️ Mount Olympus, Greece</h3>
+                <p>Distance: 25 km</p>
+                <button class="btn" onclick="showLocation('Mount Olympus, Greece', [22.3556, 40.0853])">See on Map</button>
+            </div>
+            
+            <div class="power-place-card">
+                <h3>🗿 Stonehenge, UK</h3>
+                <p>Distance: 18 km</p>
+                <button class="btn" onclick="showLocation('Stonehenge, UK', [-1.8262, 51.1789])">See on Map</button>
+            </div>
+            
+            <div class="power-place-card">
+                <h3>🏛️ Machu Picchu, Peru</h3>
+                <p>Distance: 32 km</p>
+                <button class="btn" onclick="showLocation('Machu Picchu, Peru', [-72.5449, -13.1631])">See on Map</button>
+            </div>
+            
+            <div class="power-place-card">
+                <h3>🏔️ Pyramids of Giza, Egypt</h3>
+                <p>Distance: 22 km</p>
+                <button class="btn" onclick="showLocation('Pyramids of Giza, Egypt', [31.1342, 29.9792])">See on Map</button>
+            </div>
+            
+            <div class="power-place-card">
+                <h3>🗻 Mount Fuji, Japan</h3>
+                <p>Distance: 19 km</p>
+                <button class="btn" onclick="showLocation('Mount Fuji, Japan', [138.7274, 35.3606])">See on Map</button>
+            </div>
+            
+            <div class="power-place-card">
+                <h3>🪨 Uluru, Australia</h3>
+                <p>Distance: 42 km</p>
+                <button class="btn" onclick="showLocation('Uluru, Australia', [131.0369, -25.3444])">See on Map</button>
+            </div>
+        </div>
+
+        <div class="map-container" id="map"></div>
+    </div>
+
+    <script>
+        // Initialize Mapbox
+        mapboxgl.accessToken = 'pk.eyJ1Ijoib2xld2VyIiwiYSI6ImNtZmxoanU0ZzA1MGEybHM3cDVkY25tMjUifQ.wH75vZJKfx-wJVl1bAbr-A';
+        
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/dark-v11',
+            center: [0, 0],
+            zoom: 2
+        });
+
+        // Add navigation controls
+        map.addControl(new mapboxgl.NavigationControl());
+
+        // Function to show location on map
+        function showLocation(name, coordinates) {
+            // Remove existing markers
+            document.querySelectorAll('.mapboxgl-marker').forEach(marker => marker.remove());
+            
+            // Fly to location
+            map.flyTo({
+                center: coordinates,
+                zoom: 12,
+                duration: 2000
+            });
+
+            // Add marker
+            const marker = new mapboxgl.Marker({
+                color: '#3b82f6',
+                scale: 1.2
+            })
+            .setLngLat(coordinates)
+            .setPopup(new mapboxgl.Popup().setHTML(`
+                <div style="text-align: center; padding: 10px;">
+                    <h3 style="margin: 0 0 5px 0; color: #1e293b;">${name}</h3>
+                    <p style="margin: 0; color: #64748b;">Your Power Point</p>
+                </div>
+            `))
+            .addTo(map);
+
+            // Open popup
+            marker.getPopup().addTo(map);
+        }
+
+        // Add some initial markers when map loads
+        map.on('load', function() {
+            // Add a few default markers
+            const defaultLocations = [
+                { name: 'Pyramids of Giza, Egypt', coords: [31.1342, 29.9792] },
+                { name: 'Stonehenge, UK', coords: [-1.8262, 51.1789] },
+                { name: 'Mount Fuji, Japan', coords: [138.7274, 35.3606] }
+            ];
+
+            defaultLocations.forEach(location => {
+                new mapboxgl.Marker({
+                    color: '#60a5fa',
+                    scale: 0.8
+                })
+                .setLngLat(location.coords)
+                .setPopup(new mapboxgl.Popup().setHTML(`
+                    <div style="text-align: center; padding: 8px;">
+                        <h4 style="margin: 0 0 3px 0; color: #1e293b;">${location.name}</h4>
+                        <p style="margin: 0; color: #64748b; font-size: 12px;">Power Point</p>
+                    </div>
+                `))
+                .addTo(map);
+            });
+        });
+    </script>
+</body>
+</html>

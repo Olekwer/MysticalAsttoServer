@@ -1,0 +1,58 @@
+export const ZODIAC_SIGNS = {
+  ARIES: 'ARIES',
+  TAURUS: 'TAURUS',
+  GEMINI: 'GEMINI',
+  CANCER: 'CANCER',
+  LEO: 'LEO',
+  VIRGO: 'VIRGO',
+  LIBRA: 'LIBRA',
+  SCORPIO: 'SCORPIO',
+  SAGITTARIUS: 'SAGITTARIUS',
+  CAPRICORN: 'CAPRICORN',
+  AQUARIUS: 'AQUARIUS',
+  PISCES: 'PISCES',
+} as const;
+
+export const ELEMENTS = {
+  FIRE: 'FIRE',
+  EARTH: 'EARTH',
+  AIR: 'AIR',
+  WATER: 'WATER',
+} as const;
+
+export const MOON_PHASES = {
+  NEW_MOON: 'NEW_MOON',
+  WAXING_CRESCENT: 'WAXING_CRESCENT',
+  FIRST_QUARTER: 'FIRST_QUARTER',
+  WAXING_GIBBOUS: 'WAXING_GIBBOUS',
+  FULL_MOON: 'FULL_MOON',
+  WANING_GIBBOUS: 'WANING_GIBBOUS',
+  LAST_QUARTER: 'LAST_QUARTER',
+  WANING_CRESCENT: 'WANING_CRESCENT',
+} as const;
+
+export const RITUAL_DIFFICULTIES = {
+  EASY: 'EASY',
+  MEDIUM: 'MEDIUM',
+  HARD: 'HARD',
+} as const;
+
+export const RITUAL_CATEGORIES = {
+  MEDITATION: 'meditation',
+  INTENTION_SETTING: 'intention-setting',
+  GROWTH: 'growth',
+  ACTION: 'action',
+  COMPLETION: 'completion',
+  CELEBRATION: 'celebration',
+  EVALUATION: 'evaluation',
+  RELEASE: 'release',
+  REST: 'rest',
+} as const;
+
+export const RECOMMENDATION_TYPES = {
+  RITUAL_OF_DAY: 'RITUAL_OF_DAY',
+  STONE_OF_DAY: 'STONE_OF_DAY',
+  TEA_RECIPE: 'TEA_RECIPE',
+  ENERGY_TIP: 'ENERGY_TIP',
+  ASTROLOGICAL_PATH: 'ASTROLOGICAL_PATH',
+} as const; 
