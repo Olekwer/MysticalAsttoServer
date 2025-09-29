@@ -18,6 +18,7 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { LocationModule } from './modules/location/location.module';
+import { AIModule } from './modules/ai/ai.module';
 import { HealthModule } from './health/health.module';
 
     // Common modules
@@ -73,6 +74,7 @@ import { I18nModule } from './common/i18n/i18n.module';
     NotificationsModule,
     AnalyticsModule,
     LocationModule,
+    AIModule,
     HealthModule,
   ],
 })

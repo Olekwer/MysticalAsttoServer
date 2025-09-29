@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAstroStore } from '../stores/astroStore';
+import AddressAutocomplete from './AddressAutocomplete';
 
 const NatalChart: React.FC = () => {
   const [birthDate, setBirthDate] = useState('');
@@ -13,6 +14,10 @@ const NatalChart: React.FC = () => {
     if (birthDate && birthTime && birthPlace) {
       await fetchNatalChart(birthDate, birthTime, birthPlace);
     }
+  };
+
+  const handleBirthPlaceSelect = (location: { latitude: number; longitude: number; address: string }) => {
+    setBirthPlace(location.address);
   };
 
   return (
@@ -81,15 +86,13 @@ const NatalChart: React.FC = () => {
                 <label htmlFor="birthPlace" style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: 'rgba(255, 255, 255, 0.8)', marginBottom: '0.5rem' }}>
                   Birth Place
                 </label>
-                <input
-                  id="birthPlace"
-                  type="text"
+                <AddressAutocomplete
                   value={birthPlace}
-                  onChange={(e) => setBirthPlace(e.target.value)}
-                  className="mystical-input"
-                  style={{ width: '100%' }}
+                  onChange={setBirthPlace}
+                  onSelect={handleBirthPlaceSelect}
                   placeholder="City, Country"
-                  required
+                  disabled={isLoading}
+                  className="w-full"
                 />
               </div>
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getApiUrl } from '../config/api';
 import { useAuthStore } from '../stores/authStore';
+import AddressAutocomplete from './AddressAutocomplete';
 
 interface BirthDateFormProps {
   currentBirthDate?: string;
@@ -68,6 +69,13 @@ const BirthDateForm: React.FC<BirthDateFormProps> = ({
     }));
   };
 
+  const handleBirthPlaceSelect = (location: { latitude: number; longitude: number; address: string }) => {
+    setFormData(prev => ({
+      ...prev,
+      birthPlace: location.address
+    }));
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md border border-white/20">
@@ -113,13 +121,13 @@ const BirthDateForm: React.FC<BirthDateFormProps> = ({
             <label className="block text-sm font-medium text-white/90 mb-2">
               Birth Place (optional)
             </label>
-            <input
-              type="text"
-              name="birthPlace"
+            <AddressAutocomplete
               value={formData.birthPlace}
-              onChange={handleChange}
+              onChange={(value) => setFormData(prev => ({ ...prev, birthPlace: value }))}
+              onSelect={handleBirthPlaceSelect}
               placeholder="e.g., New York, USA"
-              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
+              className="w-full"
             />
           </div>
 

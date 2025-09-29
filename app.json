@@ -1,0 +1,42 @@
+{
+  "name": "Mystical Astro API",
+  "description": "Астрологический сервис с персональными рекомендациями",
+  "repository": "https://github.com/yourusername/MysticalAsttoServer",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["node", "nestjs", "astrology", "api"],
+  "image": "heroku/nodejs",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:mini"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "value": "production"
+    },
+    "JWT_SECRET": {
+      "generator": "secret"
+    },
+    "ALLOWED_ORIGINS": {
+      "value": "https://yourdomain.com",
+      "required": false
+    },
+    "OPENAI_API_KEY": {
+      "required": true
+    }
+  },
+  "scripts": {
+    "postdeploy": "npx prisma migrate deploy && npx prisma db seed"
+  }
+}

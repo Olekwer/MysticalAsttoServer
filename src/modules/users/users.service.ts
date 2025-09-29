@@ -139,8 +139,15 @@ export class UsersService {
         select: {
           id: true,
           email: true,
+          firstName: true,
+          lastName: true,
+          birthDate: true,
+          birthTime: true,
+          birthPlace: true,
           zodiacSign: true,
           element: true,
+          timezone: true,
+          language: true,
         },
       });
 
@@ -160,15 +167,26 @@ export class UsersService {
       // Get power stone based on zodiac sign
       const powerStone = this.getPowerStoneForSign(user.zodiacSign);
 
+      // Generate or get user's power places
+      const powerPlaces = await this.generatePowerPlaces(userId);
+
       return {
         user: {
           id: user.id,
           email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          birthDate: user.birthDate,
+          birthTime: user.birthTime,
+          birthPlace: user.birthPlace,
           zodiacSign: user.zodiacSign,
           element: user.element,
+          timezone: user.timezone,
+          language: user.language,
         },
         powerPlace,
         powerStone,
+        powerPlaces,
         progress: {
           ritualsCompleted: 0, // Simplified for now
         },
@@ -216,4 +234,46 @@ export class UsersService {
     
     return powerStones[zodiacSign] || powerStones['PISCES'];
   }
+
+  async generatePowerPlaces(userId: string) {
+    try {
+      // Get user's birth information
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          birthPlace: true,
+          birthDate: true,
+        },
+      });
+
+      if (!user || !user.birthPlace || !user.birthDate) {
+        throw new NotFoundException('User birth information not found');
+      }
+
+      // Check if user already has generated power places
+      const existingPlaces = await this.prisma.userPowerPlace.findMany({
+        where: { userId },
+        include: { powerPlace: true },
+      });
+
+      if (existingPlaces.length >= 5) {
+        return existingPlaces.map(up => ({
+          id: up.powerPlace.id,
+          name: up.powerPlace.name,
+          description: up.powerPlace.description,
+          latitude: up.powerPlace.latitude,
+          longitude: up.powerPlace.longitude,
+          distance: up.distance,
+        }));
+      }
+
+      // AI functionality temporarily disabled - return empty array
+      console.log('Power places generation temporarily disabled');
+      return [];
+    } catch (error) {
+      console.error('Error generating power places:', error);
+      return [];
+    }
+  }
+
 } 

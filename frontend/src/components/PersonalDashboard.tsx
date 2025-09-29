@@ -5,6 +5,8 @@ import EnergyDashboard from './EnergyDashboard';
 import BirthDateForm from './BirthDateForm';
 import MapModal from './MapModal';
 import GeolocationPrompt from './GeolocationPrompt';
+import AITextGenerator from './AITextGenerator';
+import Rituals from './Rituals';
 
 interface UserProfile {
   zodiacSign: string;
@@ -17,9 +19,31 @@ interface UserProfile {
     name: string;
     description: string;
   };
+  powerPlaces: Array<{
+    id: string;
+    name: string;
+    description: string;
+    latitude: number;
+    longitude: number;
+    distance: number;
+  }>;
   progress: {
     ritualsCompleted: number;
   };
+}
+
+interface UserData {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  birthDate?: string;
+  birthTime?: string;
+  birthPlace?: string;
+  zodiacSign?: string;
+  element?: string;
+  timezone?: string;
+  language?: string;
 }
 
 const PersonalDashboard: React.FC = () => {
@@ -29,8 +53,9 @@ const PersonalDashboard: React.FC = () => {
   const [showBirthDateForm, setShowBirthDateForm] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showGeolocationPrompt, setShowGeolocationPrompt] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'rituals'>('dashboard');
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -59,6 +84,7 @@ const PersonalDashboard: React.FC = () => {
           element: dashboardData.user.element,
           powerPlace: dashboardData.powerPlace,
           powerStone: dashboardData.powerStone,
+          powerPlaces: dashboardData.powerPlaces || [],
           progress: dashboardData.progress
         };
         
@@ -84,6 +110,7 @@ const PersonalDashboard: React.FC = () => {
             name: 'Aquamarine',
             description: 'stone of peace'
           },
+          powerPlaces: [],
           progress: {
             ritualsCompleted: 0
           }
@@ -214,6 +241,30 @@ const PersonalDashboard: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-4">
+          {/* Navigation */}
+          <nav className="flex gap-2">
+            <button
+              onClick={() => setCurrentView('dashboard')}
+              className={`px-4 py-2 rounded-lg text-sm transition-all duration-300 ${
+                currentView === 'dashboard' 
+                  ? 'bg-white/20 text-white' 
+                  : 'bg-white/10 text-white/70 hover:bg-white/15 hover:text-white'
+              }`}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => setCurrentView('rituals')}
+              className={`px-4 py-2 rounded-lg text-sm transition-all duration-300 ${
+                currentView === 'rituals' 
+                  ? 'bg-white/20 text-white' 
+                  : 'bg-white/10 text-white/70 hover:bg-white/15 hover:text-white'
+              }`}
+            >
+              Rituals
+            </button>
+          </nav>
+          
           <div className="px-4 py-2 bg-white/10 rounded-lg text-sm">
             {getSignInEnglish(profile.zodiacSign)} • {profile.element.toLowerCase()}
           </div>
@@ -227,17 +278,26 @@ const PersonalDashboard: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="text-center mb-12">
-        <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
-          Welcome to Your Power Zone
-        </h2>
-        <p className="text-xl text-white/80 m-0 italic">
-          Your energy has its place. Enter the path of healing.
-        </p>
-      </main>
+      {currentView === 'rituals' ? (
+        <Rituals />
+      ) : (
+        <>
+          <main className="text-center mb-12">
+            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
+              Welcome to Your Power Zone
+            </h2>
+            <p className="text-xl text-white/80 m-0 italic">
+              Your energy has its place. Enter the path of healing.
+            </p>
+          </main>
 
-      {/* Energy Dashboard */}
-      <EnergyDashboard />
+                  {/* Energy Dashboard */}
+                  <EnergyDashboard />
+
+                  {/* AI Text Generator */}
+                  <div className="max-w-4xl mx-auto mb-12">
+                    <AITextGenerator />
+                  </div>
 
       {/* Profile Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -256,12 +316,17 @@ const PersonalDashboard: React.FC = () => {
             {profile.element}
           </div>
           {userData?.birthDate && (
-            <div className="text-sm text-white/60 mb-4">
+            <div className="text-sm text-white/60 mb-2">
               Born: {new Date(userData.birthDate).toLocaleDateString('en-US', { 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
               })}
+            </div>
+          )}
+          {userData?.birthPlace && (
+            <div className="text-sm text-white/60 mb-4">
+              📍 {userData.birthPlace}
             </div>
           )}
           <button
@@ -327,6 +392,49 @@ const PersonalDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Power Places Section */}
+      {profile.powerPlaces && profile.powerPlaces.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">
+            Your Power Places
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {profile.powerPlaces.map((place, index) => (
+              <div key={place.id || index} className="mystical-card">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full flex items-center justify-center text-2xl">
+                    ⚡
+                  </div>
+                  <div className="text-sm text-white/60">
+                    {place.distance.toFixed(1)} km
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold mb-2 text-white">
+                  {place.name}
+                </h3>
+                <p className="text-sm text-white/70 mb-4 line-clamp-3">
+                  {place.description}
+                </p>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-white/50">
+                    {place.latitude.toFixed(4)}, {place.longitude.toFixed(4)}
+                  </div>
+                  <button 
+                    onClick={() => {
+                      // TODO: Open map with this location
+                      console.log('Open map for:', place);
+                    }}
+                    className="px-3 py-1 bg-gradient-to-r from-purple-500 to-purple-400 rounded-lg text-white text-xs hover:from-purple-600 hover:to-purple-500 transition-all"
+                  >
+                    View Map
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Birth Date Form Modal */}
       {showBirthDateForm && (
         <BirthDateForm
@@ -358,6 +466,8 @@ const PersonalDashboard: React.FC = () => {
           onLocationUpdated={handleLocationUpdated}
           onSkip={handleSkipGeolocation}
         />
+      )}
+        </>
       )}
     </div>
   );

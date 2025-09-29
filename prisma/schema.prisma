@@ -61,11 +61,14 @@ model Ritual {
   duration          Int
   category          String
   difficulty        String
+  audioUrl          String?
+  locationId        String?
   isPremium         Boolean             @default(false)
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   RitualToRitualTag RitualToRitualTag[]
   userRituals       UserRitual[]
+  location          PowerPlace?         @relation(fields: [locationId], references: [id])
 
   @@map("rituals")
 }
@@ -311,6 +314,7 @@ model PowerPlace {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userPlaces  UserPowerPlace[]
+  rituals     Ritual[]
 
   @@map("power_places")
 }

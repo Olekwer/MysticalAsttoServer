@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../config/api';
 import { useAuthStore } from '../stores/authStore';
+import mapboxgl from 'mapbox-gl';
+import LocationPicker from './LocationPicker';
+import AddressAutocomplete from './AddressAutocomplete';
 
 interface GeolocationPromptProps {
   onLocationUpdated: (location?: {latitude: number, longitude: number}) => void;
@@ -12,11 +15,20 @@ const GeolocationPrompt: React.FC<GeolocationPromptProps> = ({ onLocationUpdated
   const [isRequesting, setIsRequesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+
+  // Mapbox access token
+  const MAPBOX_TOKEN = 'pk.eyJ1Ijoib2xld2VyIiwiYSI6ImNtZmxoanU0ZzA1MGEybHM3cDVkY25tMjUifQ.wH75vZJKfx-wJVl1bAbr-A';
 
   useEffect(() => {
     // Check if geolocation is supported
     setIsSupported('geolocation' in navigator);
+    
+    // Set Mapbox access token
+    mapboxgl.accessToken = MAPBOX_TOKEN;
   }, []);
+
 
   const handleGetLocation = async () => {
     if (!isSupported) {
@@ -101,10 +113,83 @@ const GeolocationPrompt: React.FC<GeolocationPromptProps> = ({ onLocationUpdated
         throw new Error('Failed to update location');
       }
 
-      onLocationUpdated({ latitude, longitude });
+      onLocationUpdated({ latitude: 0, longitude: 0 }); // IP location will be determined by backend
     } catch (err) {
       console.error('IP location error:', err);
       setError('Failed to determine your location. Using default power places.');
+    } finally {
+      setIsRequesting(false);
+    }
+  };
+
+
+  const handleAddressSelect = (location: { latitude: number; longitude: number; address: string }) => {
+    setSearchQuery(location.address);
+    handleSelectLocation({
+      center: [location.longitude, location.latitude],
+      place_name: location.address
+    });
+  };
+
+  const handleSelectLocation = async (place: any) => {
+    const [longitude, latitude] = place.center;
+    
+    setIsRequesting(true);
+    setError(null);
+
+    try {
+      // Send location to backend
+      const response = await fetch(getApiUrl('/location/update-location'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          latitude,
+          longitude
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update location');
+      }
+
+      onLocationUpdated({ latitude, longitude });
+    } catch (err) {
+      console.error('Location update error:', err);
+      setError('Failed to update location. Please try again.');
+    } finally {
+      setIsRequesting(false);
+    }
+  };
+
+  const handleMapLocationSelected = async (location: { latitude: number; longitude: number; address?: string }) => {
+    setIsRequesting(true);
+    setError(null);
+
+    try {
+      // Send location to backend
+      const response = await fetch(getApiUrl('/location/update-location'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          latitude: location.latitude,
+          longitude: location.longitude
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update location');
+      }
+
+      onLocationUpdated({ latitude: location.latitude, longitude: location.longitude });
+    } catch (err) {
+      console.error('Location update error:', err);
+      setError('Failed to update location. Please try again.');
     } finally {
       setIsRequesting(false);
     }
@@ -136,6 +221,26 @@ const GeolocationPrompt: React.FC<GeolocationPromptProps> = ({ onLocationUpdated
             </button>
           )}
 
+          {/* Address Autocomplete */}
+          <div className="space-y-2">
+            <AddressAutocomplete
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSelect={handleAddressSelect}
+              placeholder="Type a city or address..."
+              disabled={isRequesting}
+              className="w-full"
+            />
+          </div>
+
+          <button
+            onClick={() => setShowLocationPicker(true)}
+            disabled={isRequesting}
+            className="w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-400 rounded-lg text-white font-semibold hover:from-purple-600 hover:to-purple-500 transition-all"
+          >
+            📍 Choose on Map
+          </button>
+
           <button
             onClick={handleUseIPLocation}
             disabled={isRequesting}
@@ -165,6 +270,13 @@ const GeolocationPrompt: React.FC<GeolocationPromptProps> = ({ onLocationUpdated
           </p>
         </div>
       </div>
+
+      {/* Location Picker Modal */}
+      <LocationPicker
+        isOpen={showLocationPicker}
+        onClose={() => setShowLocationPicker(false)}
+        onLocationSelected={handleMapLocationSelected}
+      />
     </div>
   );
 };

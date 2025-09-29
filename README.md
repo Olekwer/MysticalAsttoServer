@@ -149,3 +149,46 @@ docker exec -it mystical-astro-postgres psql -U postgres -d mystical_astro
 ### Проблемы с Redis/RabbitMQ
 1. Проверьте статус сервисов: `docker-compose ps`
 2. Просмотрите логи: `docker-compose logs redis rabbitmq`
+
+
+🐳 Запуск Docker и базы данных
+
+# Запустить PostgreSQL в Docker
+docker compose up postgres -d
+# 2. Исправить swisseph
+npm rebuild swisseph
+# Проверить, что контейнер запущен
+docker ps
+
+��️ Настройка базы данных
+
+# Применить миграции Prisma
+npx prisma db push
+
+# Заполнить базу тестовыми данными
+npm run db:seed
+
+# Заполнить базу местами силы
+npm run db:seed-power-places
+
+Запуск backend сервера
+
+npm run start:dev
+
+
+Проверка работы
+Backend: http://localhost:3010
+Frontend: http://localhost:5173
+Prisma Studio: npx prisma studio (опционально)
+
+🛠️ Полезные команды
+# Остановить Docker
+docker compose down
+
+# Перезапустить backend
+pkill -f "nest start" && npm run start:dev
+
+# Очистить и пересоздать базу данных
+npx prisma db push --force-reset
+npm run db:seed
+npm run db:seed-power-places
