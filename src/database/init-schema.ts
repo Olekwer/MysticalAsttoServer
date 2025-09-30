@@ -14,30 +14,17 @@ export class DatabaseInitService implements OnModuleInit {
   private async initializeSchema() {
     try {
       this.logger.log('🚀 Initializing database schema...');
-
-      // Check if users table exists
-      const userTableExists = await this.prisma.$queryRaw`
-        SELECT EXISTS (
-          SELECT FROM information_schema.tables 
-          WHERE table_schema = 'public' 
-          AND table_name = 'users'
-        );
-      `;
-
-      if ((userTableExists as any)[0]?.exists) {
-        this.logger.log('✅ Database schema already exists');
-        return;
-      }
-
+      
+      // Simple approach - just try to create everything with IF NOT EXISTS
       this.logger.log('📊 Creating database schema...');
 
-      // Create enums
+      // Create enums first
       await this.createEnums();
       
       // Create tables
       await this.createTables();
 
-      this.logger.log('✅ Database schema created successfully!');
+      this.logger.log('✅ Database schema initialized successfully!');
       
     } catch (error) {
       this.logger.error('❌ Database schema initialization failed:', error.message);
@@ -57,22 +44,15 @@ export class DatabaseInitService implements OnModuleInit {
 
     for (const enumDef of enums) {
       try {
-        // Check if enum exists
-        const enumExists = await this.prisma.$queryRaw`
-          SELECT EXISTS (
-            SELECT 1 FROM pg_type 
-            WHERE typname = ${enumDef.name.toLowerCase()}
-          );
-        `;
-
-        if (!(enumExists as any)[0]?.exists) {
-          const enumValues = enumDef.values.map(v => `'${v}'`).join(', ');
-          const query = `CREATE TYPE "${enumDef.name}" AS ENUM (${enumValues})`;
-          await this.prisma.$executeRawUnsafe(query);
-          this.logger.log(`✅ Created enum: ${enumDef.name}`);
-        } else {
-          this.logger.log(`📋 Enum already exists: ${enumDef.name}`);
-        }
+        const enumValues = enumDef.values.map(v => `'${v}'`).join(', ');
+        const query = `DO $$ BEGIN 
+          IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = '${enumDef.name.toLowerCase()}') THEN
+            CREATE TYPE "${enumDef.name}" AS ENUM (${enumValues});
+          END IF;
+        END $$;`;
+        
+        await this.prisma.$executeRawUnsafe(query);
+        this.logger.log(`✅ Ensured enum exists: ${enumDef.name}`);
       } catch (error) {
         this.logger.error(`❌ Failed to create enum ${enumDef.name}:`, error.message);
         // Don't throw - continue with other enums
