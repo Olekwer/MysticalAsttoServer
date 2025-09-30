@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../common/database/prisma.service';
+import { Client } from 'pg';
 
 @Injectable()
 export class DatabaseInitService implements OnModuleInit {
@@ -12,27 +13,41 @@ export class DatabaseInitService implements OnModuleInit {
   }
 
   private async initializeSchema() {
+    const connectionString = process.env.DATABASE_URL;
+    
+    if (!connectionString) {
+      this.logger.error('❌ DATABASE_URL is not set. Skipping schema initialization.');
+      return;
+    }
+
+    const client = new Client({
+      connectionString,
+      ssl: { rejectUnauthorized: false }
+    });
+
     try {
       this.logger.log('🚀 Initializing database schema...');
-      
-      // Simple approach - just try to create everything with IF NOT EXISTS
-      this.logger.log('📊 Creating database schema...');
+      await client.connect();
+      this.logger.log('🔌 Connected to database');
 
       // Create enums first
-      await this.createEnums();
+      await this.createEnums(client);
       
       // Create tables
-      await this.createTables();
+      await this.createTables(client);
 
       this.logger.log('✅ Database schema initialized successfully!');
       
     } catch (error) {
       this.logger.error('❌ Database schema initialization failed:', error.message);
       // Don't throw - let app continue
+    } finally {
+      await client.end();
+      this.logger.log('🔌 Database connection closed');
     }
   }
 
-  private async createEnums() {
+  private async createEnums(client: Client) {
     const enums = [
       { name: 'ZodiacSign', values: ['ARIES', 'TAURUS', 'GEMINI', 'CANCER', 'LEO', 'VIRGO', 'LIBRA', 'SCORPIO', 'SAGITTARIUS', 'CAPRICORN', 'AQUARIUS', 'PISCES'] },
       { name: 'Element', values: ['FIRE', 'EARTH', 'AIR', 'WATER'] },
@@ -51,7 +66,7 @@ export class DatabaseInitService implements OnModuleInit {
           END IF;
         END $$;`;
         
-        await this.prisma.$executeRawUnsafe(query);
+        await client.query(query);
         this.logger.log(`✅ Ensured enum exists: ${enumDef.name}`);
       } catch (error) {
         this.logger.error(`❌ Failed to create enum ${enumDef.name}:`, error.message);
@@ -60,7 +75,7 @@ export class DatabaseInitService implements OnModuleInit {
     }
   }
 
-  private async createTables() {
+  private async createTables(client: Client) {
     const tables = [
       {
         name: 'users',
@@ -138,7 +153,7 @@ export class DatabaseInitService implements OnModuleInit {
 
     for (const table of tables) {
       try {
-        await this.prisma.$executeRawUnsafe(table.query);
+        await client.query(table.query);
         this.logger.log(`✅ Created table: ${table.name}`);
       } catch (error) {
         this.logger.error(`❌ Failed to create table ${table.name}:`, error.message);
@@ -148,7 +163,7 @@ export class DatabaseInitService implements OnModuleInit {
 
     // Create indexes
     try {
-      await this.prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "users_email_key" ON "users"("email")`);
+      await client.query(`CREATE UNIQUE INDEX IF NOT EXISTS "users_email_key" ON "users"("email")`);
       this.logger.log('✅ Created indexes');
     } catch (error) {
       this.logger.error('❌ Failed to create indexes:', error.message);
