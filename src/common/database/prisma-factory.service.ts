@@ -7,7 +7,7 @@ export class PrismaFactoryService {
     return new PrismaClient({
       datasources: {
         db: {
-          url: process.env.DATABASE_URL,
+          url: process.env.DATABASE_URL + '?pgbouncer=true&connection_limit=1',
         },
       },
       // Force new connection each time to avoid prepared statement conflicts

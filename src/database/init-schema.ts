@@ -36,6 +36,9 @@ export class DatabaseInitService implements OnModuleInit {
       // Create tables
       await this.createTables(client);
       
+      // Add missing columns to existing tables
+      await this.addMissingColumns(client);
+      
       // Add seed data
       await this.seedData(client);
 
@@ -118,6 +121,8 @@ export class DatabaseInitService implements OnModuleInit {
           "duration" INTEGER NOT NULL,
           "category" TEXT NOT NULL,
           "difficulty" TEXT NOT NULL,
+          "audioUrl" TEXT,
+          "locationId" TEXT,
           "isPremium" BOOLEAN NOT NULL DEFAULT false,
           "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
           "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -174,6 +179,30 @@ export class DatabaseInitService implements OnModuleInit {
       this.logger.log('✅ Created indexes');
     } catch (error) {
       this.logger.error('❌ Failed to create indexes:', error.message);
+    }
+  }
+
+  private async addMissingColumns(client: Client) {
+    try {
+      // Add missing columns to rituals table
+      await client.query(`
+        DO $$ 
+        BEGIN
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                        WHERE table_name='rituals' AND column_name='audioUrl') THEN
+            ALTER TABLE rituals ADD COLUMN "audioUrl" TEXT;
+          END IF;
+          
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                        WHERE table_name='rituals' AND column_name='locationId') THEN
+            ALTER TABLE rituals ADD COLUMN "locationId" TEXT;
+          END IF;
+        END $$;
+      `);
+      
+      this.logger.log('✅ Added missing columns to existing tables');
+    } catch (error) {
+      this.logger.error('❌ Failed to add missing columns:', error.message);
     }
   }
 
