@@ -39,7 +39,11 @@ export class EmailService {
     }
   }
 
-  async sendWelcomeEmail(email: string, firstName?: string, language: string = 'en'): Promise<void> {
+  async sendWelcomeEmail(
+    email: string,
+    firstName?: string,
+    language: string = 'en',
+  ): Promise<void> {
     const mailOptions = {
       from: this.configService.get<string>('SMTP_FROM'),
       to: email,
@@ -55,7 +59,12 @@ export class EmailService {
     }
   }
 
-  async sendDailyDigest(email: string, userData: any, recommendations: any, language: string = 'en'): Promise<void> {
+  async sendDailyDigest(
+    email: string,
+    userData: any,
+    recommendations: any,
+    language: string = 'en',
+  ): Promise<void> {
     const mailOptions = {
       from: this.configService.get<string>('SMTP_FROM'),
       to: email,
@@ -97,9 +106,9 @@ export class EmailService {
     `;
   }
 
-  private async generateWelcomeHTML(firstName?: string, language: string = 'en'): Promise<string> {
+  private async generateWelcomeHTML(firstName?: string, _language: string = 'en'): Promise<string> {
     const t = (key: string) => 'common.' + key; // Временное отключение перевода
-    
+
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #6b46c1;">🔮 ${await t('welcome')}</h2>
@@ -125,7 +134,11 @@ export class EmailService {
     `;
   }
 
-  private async generateDailyDigestHTML(userData: any, recommendations: any, language: string = 'en'): Promise<string> {
+  private async generateDailyDigestHTML(
+    userData: any,
+    recommendations: any,
+    language: string = 'en',
+  ): Promise<string> {
     const t = (key: string) => 'common.' + key; // Временное отключение перевода
     console.log(language);
     return `
@@ -174,4 +187,4 @@ export class EmailService {
       </div>
     `;
   }
-} 
+}

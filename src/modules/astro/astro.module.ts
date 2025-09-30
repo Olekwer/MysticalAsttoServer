@@ -11,4 +11,4 @@ import { RedisService } from '../../common/redis/redis.service';
   providers: [AstroService, PrismaService, RedisService],
   exports: [AstroService],
 })
-export class AstroModule {} 
+export class AstroModule {}

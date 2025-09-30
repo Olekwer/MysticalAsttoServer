@@ -27,4 +27,4 @@ export class ContentController {
   findAllTeaRecipes() {
     return this.contentService.findAllTeaRecipes();
   }
-} 
+}

@@ -31,7 +31,7 @@ export class LocationController {
   @ApiResponse({ status: 200, description: 'Location updated and power places generated' })
   async updateLocation(
     @Body() locationData: LocationRequest,
-    @Req() req: any
+    @Req() req: any,
   ): Promise<{ message: string; powerPlaces: PowerPlaceResponse[] }> {
     const userId = req.user.id;
     let latitude: number;
@@ -45,11 +45,11 @@ export class LocationController {
       // Try to get location from IP
       const clientIP = req.ip || req.connection.remoteAddress;
       const location = await this.locationService.getLocationFromIP(clientIP);
-      
+
       if (!location) {
         throw new Error('Unable to determine location');
       }
-      
+
       latitude = location.latitude;
       longitude = location.longitude;
     }
@@ -58,12 +58,12 @@ export class LocationController {
     const powerPlaces = await this.locationService.generateUserPowerPlaces(
       userId,
       latitude,
-      longitude
+      longitude,
     );
 
     return {
       message: 'Location updated and power places generated',
-      powerPlaces
+      powerPlaces,
     };
   }
 
@@ -103,24 +103,24 @@ export class LocationController {
     try {
       const userId = req.user.id;
       console.log('Testing power places for user:', userId);
-      
+
       // Test direct database query
       const userPowerPlaces = await this.locationService['prisma'].userPowerPlace.findMany({
-        where: { 
+        where: {
           userId,
-          isActive: true
+          isActive: true,
         },
         include: {
-          powerPlace: true
-        }
+          powerPlace: true,
+        },
       });
-      
+
       console.log('Direct query result:', userPowerPlaces);
-      
+
       return {
         userId,
         userPowerPlaces,
-        count: userPowerPlaces.length
+        count: userPowerPlaces.length,
       };
     } catch (error) {
       console.error('Error in testPowerPlaces:', error);

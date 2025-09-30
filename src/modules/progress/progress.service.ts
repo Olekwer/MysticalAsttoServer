@@ -15,4 +15,4 @@ export class ProgressService {
       where: { id },
     });
   }
-} 
+}

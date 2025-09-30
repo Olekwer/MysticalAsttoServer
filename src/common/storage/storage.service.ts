@@ -16,4 +16,4 @@ export class StorageService {
     // В реальном проекте здесь будет удаление из S3/MinIO
     console.log(`🗑️ File ${filename} deleted (stub)`);
   }
-} 
+}

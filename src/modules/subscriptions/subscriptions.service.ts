@@ -15,4 +15,4 @@ export class SubscriptionsService {
       where: { id },
     });
   }
-} 
+}

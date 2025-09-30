@@ -15,4 +15,4 @@ export class NotificationsService {
       where: { id },
     });
   }
-} 
+}

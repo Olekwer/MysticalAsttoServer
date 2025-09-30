@@ -20,4 +20,4 @@ export class ProgressController {
   findOne(@Param('id') id: string) {
     return this.progressService.findOne(id);
   }
-} 
+}

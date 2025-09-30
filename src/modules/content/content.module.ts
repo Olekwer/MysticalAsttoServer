@@ -8,4 +8,4 @@ import { PrismaService } from '../../common/database/prisma.service';
   providers: [ContentService, PrismaService],
   exports: [ContentService],
 })
-export class ContentModule {} 
+export class ContentModule {}

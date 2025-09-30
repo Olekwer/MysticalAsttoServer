@@ -13,4 +13,4 @@ import { AstroModule } from '../astro/astro.module';
   providers: [RecommenderService, PrismaService, RedisService],
   exports: [RecommenderService],
 })
-export class RecommenderModule {} 
+export class RecommenderModule {}

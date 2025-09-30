@@ -133,7 +133,7 @@ describe('I18nService', () => {
       mockTranslate.mockResolvedValue('Добро пожаловать');
 
       const result = await service.translate(mockReq, 'common.welcome');
-      
+
       expect(mockTranslate).toHaveBeenCalledWith('common.welcome', { lang: 'ru' });
       expect(result).toBe('Добро пожаловать');
     });
@@ -144,7 +144,7 @@ describe('I18nService', () => {
       mockTranslate.mockResolvedValue('Witamy');
 
       const result = await service.translateToLanguage('pl', 'common.welcome');
-      
+
       expect(mockTranslate).toHaveBeenCalledWith('common.welcome', { lang: 'pl' });
       expect(result).toBe('Witamy');
     });

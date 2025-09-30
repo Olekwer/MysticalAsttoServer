@@ -20,4 +20,4 @@ export class JournalController {
   findOne(@Param('id') id: string) {
     return this.journalService.findOne(id);
   }
-} 
+}

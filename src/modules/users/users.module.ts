@@ -10,4 +10,4 @@ import { LocationModule } from '../location/location.module';
   providers: [UsersService, PrismaService],
   exports: [UsersService],
 })
-export class UsersModule {} 
+export class UsersModule {}

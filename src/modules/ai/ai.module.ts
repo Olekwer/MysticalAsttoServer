@@ -5,4 +5,3 @@ import { AIController } from './ai.controller';
   controllers: [AIController],
 })
 export class AIModule {}
-

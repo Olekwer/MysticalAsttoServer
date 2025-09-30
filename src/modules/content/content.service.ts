@@ -17,4 +17,4 @@ export class ContentService {
   async findAllTeaRecipes() {
     return this.prisma.teaRecipe.findMany();
   }
-} 
+}

@@ -39,4 +39,4 @@ export class EnergyEngineController {
     const score = await this.energyEngineService.calculateDailyEnergyForUser(req.user.id);
     return { score, message: 'Энергетический показатель рассчитан' };
   }
-} 
+}

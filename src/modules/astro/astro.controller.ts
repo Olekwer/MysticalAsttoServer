@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { AstroService } from './astro.service';
 import { NatalChartDto } from './dto/natal-chart.dto';
@@ -10,7 +10,7 @@ export class AstroController {
 
   @Post('natal-chart')
   @ApiOperation({ summary: 'Generate natal chart' })
-  @ApiBody({ 
+  @ApiBody({
     description: 'Data for natal chart generation',
     type: NatalChartDto,
     examples: {
@@ -19,10 +19,10 @@ export class AstroController {
         value: {
           birthDate: '1990-05-15',
           birthTime: '14:30',
-          birthPlace: 'Moscow, Russia'
-        }
-      }
-    }
+          birthPlace: 'Moscow, Russia',
+        },
+      },
+    },
   })
   @ApiResponse({ status: 201, description: 'Natal chart generated successfully' })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
@@ -76,4 +76,4 @@ export class AstroController {
     const today = new Date();
     return this.astroService.getAstrologicalInfluences(today);
   }
-} 
+}

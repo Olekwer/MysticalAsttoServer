@@ -25,4 +25,4 @@ export class RecommenderController {
   async getFeedToday(@Req() req: any) {
     return this.recommenderService.getFeedToday(req.user.id);
   }
-} 
+}

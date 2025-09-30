@@ -8,7 +8,7 @@ import { LocationService } from '../location/location.service';
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private locationService: LocationService
+    private locationService: LocationService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -63,7 +63,7 @@ export class UsersService {
       const birthDate = new Date(updateUserDto.birthDate);
       const zodiacSign = await this.calculateZodiacSign(birthDate);
       const element = await this.calculateElement(zodiacSign);
-      
+
       updateData.zodiacSign = zodiacSign as any;
       updateData.element = element as any;
       updateData.birthDate = birthDate; // Convert to Date object
@@ -127,7 +127,7 @@ export class UsersService {
     if (earthSigns.includes(zodiacSign)) return 'EARTH';
     if (airSigns.includes(zodiacSign)) return 'AIR';
     if (waterSigns.includes(zodiacSign)) return 'WATER';
-    
+
     return 'FIRE'; // fallback
   }
 
@@ -157,13 +157,15 @@ export class UsersService {
 
       // Get nearest power place from user's location-based places
       const nearestPowerPlace = await this.locationService.getUserNearestPowerPlace(userId);
-      
+
       // Fallback to zodiac-based power place if no location-based places found
-      const powerPlace = nearestPowerPlace ? {
-        name: nearestPowerPlace.name,
-        distance: nearestPowerPlace.distance
-      } : this.getPowerPlaceForSign(user.zodiacSign);
-      
+      const powerPlace = nearestPowerPlace
+        ? {
+            name: nearestPowerPlace.name,
+            distance: nearestPowerPlace.distance,
+          }
+        : this.getPowerPlaceForSign(user.zodiacSign);
+
       // Get power stone based on zodiac sign
       const powerStone = this.getPowerStoneForSign(user.zodiacSign);
 
@@ -199,39 +201,39 @@ export class UsersService {
 
   private getPowerPlaceForSign(zodiacSign: string) {
     const powerPlaces: { [key: string]: { name: string; distance: number } } = {
-      'ARIES': { name: 'Mount Olympus, Greece', distance: 25 },
-      'TAURUS': { name: 'Stonehenge, UK', distance: 18 },
-      'GEMINI': { name: 'Machu Picchu, Peru', distance: 32 },
-      'CANCER': { name: 'Lake Błędno, Poland', distance: 14 },
-      'LEO': { name: 'Pyramids of Giza, Egypt', distance: 22 },
-      'VIRGO': { name: 'Glastonbury Tor, UK', distance: 16 },
-      'LIBRA': { name: 'Temple of Delphi, Greece', distance: 28 },
-      'SCORPIO': { name: 'Sedona Vortex, USA', distance: 35 },
-      'SAGITTARIUS': { name: 'Uluru, Australia', distance: 42 },
-      'CAPRICORN': { name: 'Mount Fuji, Japan', distance: 19 },
-      'AQUARIUS': { name: 'Crystal Cave, Iceland', distance: 26 },
-      'PISCES': { name: 'Lake Błędno, Poland', distance: 14 },
+      ARIES: { name: 'Mount Olympus, Greece', distance: 25 },
+      TAURUS: { name: 'Stonehenge, UK', distance: 18 },
+      GEMINI: { name: 'Machu Picchu, Peru', distance: 32 },
+      CANCER: { name: 'Lake Błędno, Poland', distance: 14 },
+      LEO: { name: 'Pyramids of Giza, Egypt', distance: 22 },
+      VIRGO: { name: 'Glastonbury Tor, UK', distance: 16 },
+      LIBRA: { name: 'Temple of Delphi, Greece', distance: 28 },
+      SCORPIO: { name: 'Sedona Vortex, USA', distance: 35 },
+      SAGITTARIUS: { name: 'Uluru, Australia', distance: 42 },
+      CAPRICORN: { name: 'Mount Fuji, Japan', distance: 19 },
+      AQUARIUS: { name: 'Crystal Cave, Iceland', distance: 26 },
+      PISCES: { name: 'Lake Błędno, Poland', distance: 14 },
     };
-    
+
     return powerPlaces[zodiacSign] || powerPlaces['PISCES'];
   }
 
   private getPowerStoneForSign(zodiacSign: string) {
     const powerStones: { [key: string]: { name: string; description: string } } = {
-      'ARIES': { name: 'Carnelian', description: 'stone of courage and energy' },
-      'TAURUS': { name: 'Rose Quartz', description: 'stone of love and harmony' },
-      'GEMINI': { name: 'Citrine', description: 'stone of communication and clarity' },
-      'CANCER': { name: 'Moonstone', description: 'stone of intuition and emotions' },
-      'LEO': { name: 'Sunstone', description: 'stone of leadership and confidence' },
-      'VIRGO': { name: 'Peridot', description: 'stone of healing and growth' },
-      'LIBRA': { name: 'Opal', description: 'stone of balance and harmony' },
-      'SCORPIO': { name: 'Obsidian', description: 'stone of transformation and protection' },
-      'SAGITTARIUS': { name: 'Turquoise', description: 'stone of wisdom and truth' },
-      'CAPRICORN': { name: 'Garnet', description: 'stone of strength and determination' },
-      'AQUARIUS': { name: 'Amethyst', description: 'stone of spirituality and intuition' },
-      'PISCES': { name: 'Aquamarine', description: 'stone of peace and tranquility' },
+      ARIES: { name: 'Carnelian', description: 'stone of courage and energy' },
+      TAURUS: { name: 'Rose Quartz', description: 'stone of love and harmony' },
+      GEMINI: { name: 'Citrine', description: 'stone of communication and clarity' },
+      CANCER: { name: 'Moonstone', description: 'stone of intuition and emotions' },
+      LEO: { name: 'Sunstone', description: 'stone of leadership and confidence' },
+      VIRGO: { name: 'Peridot', description: 'stone of healing and growth' },
+      LIBRA: { name: 'Opal', description: 'stone of balance and harmony' },
+      SCORPIO: { name: 'Obsidian', description: 'stone of transformation and protection' },
+      SAGITTARIUS: { name: 'Turquoise', description: 'stone of wisdom and truth' },
+      CAPRICORN: { name: 'Garnet', description: 'stone of strength and determination' },
+      AQUARIUS: { name: 'Amethyst', description: 'stone of spirituality and intuition' },
+      PISCES: { name: 'Aquamarine', description: 'stone of peace and tranquility' },
     };
-    
+
     return powerStones[zodiacSign] || powerStones['PISCES'];
   }
 
@@ -275,5 +277,4 @@ export class UsersService {
       return [];
     }
   }
-
-} 
+}

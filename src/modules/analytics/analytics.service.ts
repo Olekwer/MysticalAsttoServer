@@ -15,4 +15,4 @@ export class AnalyticsService {
       where: { id },
     });
   }
-} 
+}

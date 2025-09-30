@@ -19,7 +19,7 @@ export class RecommenderService {
   @Cron(CronExpression.EVERY_DAY_AT_5AM)
   async generateDailyRecommendationsForAllUsers() {
     this.logger.log('🔄 Generating daily recommendations for all users');
-    
+
     try {
       const users = await this.prisma.user.findMany({
         select: { id: true, timezone: true },
@@ -51,12 +51,16 @@ export class RecommenderService {
 
       // Get energy indicator
       const energyScore = await this.energyEngineService.getUserEnergyScore(userId, today);
-      
+
       // Get astrological influences
       const astroInfluences = await this.astroService.getAstrologicalInfluences(today);
 
       // Generate recommendations
-      const recommendations = await this.generateRecommendations(user, energyScore, astroInfluences);
+      const recommendations = await this.generateRecommendations(
+        user,
+        energyScore,
+        astroInfluences,
+      );
 
       // Save recommendations to database
       await this.saveRecommendations(userId, today, recommendations);
@@ -64,64 +68,68 @@ export class RecommenderService {
       // Cache recommendations
       await this.cacheRecommendations(userId, today, recommendations);
 
-              this.logger.log(`✅ Recommendations for user ${userId} generated`);
+      this.logger.log(`✅ Recommendations for user ${userId} generated`);
       return recommendations;
     } catch (error) {
-              this.logger.error(`❌ Error generating recommendations for user ${userId}:`, error);
+      this.logger.error(`❌ Error generating recommendations for user ${userId}:`, error);
       throw error;
     }
   }
 
-  private async generateRecommendations(user: any, energyScore: any, astroInfluences: any): Promise<any> {
+  private async generateRecommendations(
+    user: any,
+    energyScore: any,
+    astroInfluences: any,
+  ): Promise<any> {
     const recommendations = {};
 
-          // Ritual of the day
+    // Ritual of the day
     recommendations['ritual'] = await this.recommendRitual(user, energyScore, astroInfluences);
-    
-          // Stone of the day
+
+    // Stone of the day
     recommendations['stone'] = await this.recommendStone(user, energyScore, astroInfluences);
-    
-          // Tincture recipe
+
+    // Tincture recipe
     recommendations['tea'] = await this.recommendTea(user, energyScore, astroInfluences);
-    
-          // Energy advice
+
+    // Energy advice
     recommendations['energyTip'] = this.generateEnergyTip(energyScore.score, astroInfluences);
-    
-          // Astrological path
+
+    // Astrological path
     recommendations['astroPath'] = this.generateAstroPath(user, astroInfluences);
 
     return recommendations;
   }
 
-  private async recommendRitual(user: any, energyScore: any, astroInfluences: any): Promise<any> {
-          // Logic for choosing ritual based on energy and astrological influences
-    const energyLevel = energyScore.score;
-    const moonPhase = astroInfluences.moonPhase;
-    const userElement = user.element;
+  private async recommendRitual(user: any, _energyScore: any, _astroInfluences: any): Promise<any> {
+    // Logic for choosing ritual based on energy and astrological influences
+    // TODO: Use energyScore.score, astroInfluences.moonPhase, user.element for better recommendations
+    const energyLevel = _energyScore?.score || 50;
+    const moonPhase = _astroInfluences?.moonPhase || 'NEW_MOON';
 
-    let ritualQuery: any = {
+    const ritualQuery: any = {
       where: {
         isPremium: user.isPremium ? undefined : false,
       },
     };
 
-          // Filter by complexity based on energy
+    // Filter by complexity based on energy
     if (energyLevel < 30) {
       ritualQuery.where.difficulty = 'EASY';
     } else if (energyLevel < 70) {
       ritualQuery.where.difficulty = { in: ['EASY', 'MEDIUM'] };
     }
 
-          // Filter by category based on moon phase
+    // Filter by category based on moon phase
     const phaseCategories = {
-      'NEW_MOON': ['meditation', 'intention-setting', 'planning'],
-      'WAXING_CRESCENT': ['growth', 'learning', 'development'],
-      'FIRST_QUARTER': ['action', 'decision-making', 'courage'],
-      'WAXING_GIBBOUS': ['completion', 'refinement', 'perfection'],
-      'FULL_MOON': ['celebration', 'manifestation', 'power'],
-      'WANING_GIBBOUS': ['evaluation', 'analysis', 'review'],
-      'LAST_QUARTER': ['release', 'forgiveness', 'cleansing'],
-      'WANING_CRESCENT': ['rest', 'preparation', 'introspection'],
+      NEW_MOON: ['meditation', 'intention-setting', 'planning'],
+      WAXING_CRESCENT: ['growth', 'learning', 'development'],
+      FIRST_QUARTER: ['action', 'decision-making', 'courage'],
+      WAXING_GIBBOUS: ['completion', 'refinement', 'perfection'],
+      FULL_MOON: ['celebration', 'manifestation', 'power'],
+      WANING_GIBBOUS: ['evaluation', 'analysis', 'review'],
+      LAST_QUARTER: ['release', 'forgiveness', 'cleansing'],
+      WANING_CRESCENT: ['rest', 'preparation', 'introspection'],
     };
 
     if (phaseCategories[moonPhase]) {
@@ -129,7 +137,7 @@ export class RecommenderService {
     }
 
     const rituals = await this.prisma.ritual.findMany(ritualQuery);
-    
+
     if (rituals.length === 0) {
       // Fallback - any available ritual
       return await this.prisma.ritual.findFirst({
@@ -137,17 +145,17 @@ export class RecommenderService {
       });
     }
 
-          // Choose random ritual from suitable ones
+    // Choose random ritual from suitable ones
     return rituals[Math.floor(Math.random() * rituals.length)];
   }
 
-  private async recommendStone(user: any, energyScore: any, astroInfluences: any): Promise<any> {
-    const energyLevel = energyScore.score;
-    const moonPhase = astroInfluences.moonPhase;
+  private async recommendStone(user: any, _energyScore: any, _astroInfluences: any): Promise<any> {
+    // TODO: Use energyScore.score and astroInfluences.moonPhase for better recommendations
     const userZodiac = user.zodiacSign;
-    const userElement = user.element;
+    const userElement = user?.element;
+    // TODO: Use user.element for better recommendations
 
-    let stoneQuery: any = {
+    const stoneQuery: any = {
       where: {
         isPremium: user.isPremium ? undefined : false,
       },
@@ -164,7 +172,7 @@ export class RecommenderService {
     }
 
     const stones = await this.prisma.stone.findMany(stoneQuery);
-    
+
     if (stones.length === 0) {
       // Fallback - any available stone
       return await this.prisma.stone.findFirst({
@@ -172,17 +180,17 @@ export class RecommenderService {
       });
     }
 
-          // Choose random stone from suitable ones
+    // Choose random stone from suitable ones
     return stones[Math.floor(Math.random() * stones.length)];
   }
 
-  private async recommendTea(user: any, energyScore: any, astroInfluences: any): Promise<any> {
-    const energyLevel = energyScore.score;
-    const moonPhase = astroInfluences.moonPhase;
+  private async recommendTea(user: any, _energyScore: any, _astroInfluences: any): Promise<any> {
+    // TODO: Use energyScore.score and astroInfluences.moonPhase for better recommendations
     const userZodiac = user.zodiacSign;
-    const userElement = user.element;
+    const userElement = user?.element;
+    // TODO: Use user.element for better recommendations
 
-    let teaQuery: any = {
+    const teaQuery: any = {
       where: {
         isPremium: user.isPremium ? undefined : false,
       },
@@ -199,7 +207,7 @@ export class RecommenderService {
     }
 
     const teas = await this.prisma.teaRecipe.findMany(teaQuery);
-    
+
     if (teas.length === 0) {
       // Fallback - any available recipe
       return await this.prisma.teaRecipe.findFirst({
@@ -207,13 +215,13 @@ export class RecommenderService {
       });
     }
 
-          // Choose random recipe from suitable ones
+    // Choose random recipe from suitable ones
     return teas[Math.floor(Math.random() * teas.length)];
   }
 
-  private generateEnergyTip(energyScore: number, astroInfluences: any): string {
-    const moonPhase = astroInfluences.moonPhase;
-    
+  private generateEnergyTip(energyScore: number, _astroInfluences: any): string {
+    // TODO: Use astroInfluences.moonPhase for better recommendations
+
     if (energyScore < 30) {
       return 'Today low energy level. Rest, meditation and future planning are recommended.';
     } else if (energyScore < 50) {
@@ -225,54 +233,55 @@ export class RecommenderService {
     }
   }
 
-  private generateAstroPath(user: any, astroInfluences: any): any {
-    const moonPhase = astroInfluences.moonPhase;
-    const userElement = user.element;
-    
+  private generateAstroPath(_user: any, _astroInfluences: any): any {
+    // TODO: Use astroInfluences.moonPhase for better recommendations
+    const moonPhase = _astroInfluences?.moonPhase || 'NEW_MOON';
+    // TODO: Use user.element for better recommendations
+
     const pathSuggestions = {
-      'NEW_MOON': {
+      NEW_MOON: {
         theme: 'New beginnings',
         focus: 'Planning and goal setting',
-                  actions: ['Meditation', 'Visualization', 'Writing plans'],
-          duration: 'Until next new moon',
+        actions: ['Meditation', 'Visualization', 'Writing plans'],
+        duration: 'Until next new moon',
       },
-      'WAXING_CRESCENT': {
-                  theme: 'Development and growth',
-          focus: 'Learning and skill acquisition',
-          actions: ['Learning new things', 'Practice', 'Experiments'],
-                  duration: 'Until first quarter',
+      WAXING_CRESCENT: {
+        theme: 'Development and growth',
+        focus: 'Learning and skill acquisition',
+        actions: ['Learning new things', 'Practice', 'Experiments'],
+        duration: 'Until first quarter',
       },
-      'FIRST_QUARTER': {
-                  theme: 'Action and determination',
-          focus: 'Overcoming obstacles',
-          actions: ['Decision making', 'Active actions', 'Courage'],
-          duration: 'Until full moon',
+      FIRST_QUARTER: {
+        theme: 'Action and determination',
+        focus: 'Overcoming obstacles',
+        actions: ['Decision making', 'Active actions', 'Courage'],
+        duration: 'Until full moon',
       },
-      'WAXING_GIBBOUS': {
-                  theme: 'Completion and perfection',
-          focus: 'Detailing and improvement',
-          actions: ['Project refinement', 'Bug fixes', 'Launch preparation'],
-                  duration: 'Until full moon',
+      WAXING_GIBBOUS: {
+        theme: 'Completion and perfection',
+        focus: 'Detailing and improvement',
+        actions: ['Project refinement', 'Bug fixes', 'Launch preparation'],
+        duration: 'Until full moon',
       },
-      'FULL_MOON': {
-                  theme: 'Manifestation and realization',
-          focus: 'Achieving results',
-          actions: ['Project launch', 'Celebration', 'Talent demonstration'],
+      FULL_MOON: {
+        theme: 'Manifestation and realization',
+        focus: 'Achieving results',
+        actions: ['Project launch', 'Celebration', 'Talent demonstration'],
         duration: 'Until last quarter',
       },
-      'WANING_GIBBOUS': {
+      WANING_GIBBOUS: {
         theme: 'Analysis and evaluation',
         focus: 'Review and adjustment',
         actions: ['Result analysis', 'Effectiveness evaluation', 'Change planning'],
         duration: 'Until last quarter',
       },
-      'LAST_QUARTER': {
+      LAST_QUARTER: {
         theme: 'Letting go and cleansing',
         focus: 'Getting rid of excess',
         actions: ['Forgiveness', 'Space cleansing', 'Letting go of the past'],
         duration: 'Until waning crescent',
       },
-      'WANING_CRESCENT': {
+      WANING_CRESCENT: {
         theme: 'Rest and preparation',
         focus: 'Inner work',
         actions: ['Rest', 'Meditation', 'Preparation for new cycle'],
@@ -283,7 +292,11 @@ export class RecommenderService {
     return pathSuggestions[moonPhase] || pathSuggestions['NEW_MOON'];
   }
 
-  private async saveRecommendations(userId: string, date: Date, recommendations: any): Promise<void> {
+  private async saveRecommendations(
+    userId: string,
+    date: Date,
+    recommendations: any,
+  ): Promise<void> {
     const recommendationTypes = [
       { type: 'RITUAL_OF_DAY' as const, content: recommendations.ritual },
       { type: 'STONE_OF_DAY' as const, content: recommendations.stone },
@@ -315,10 +328,14 @@ export class RecommenderService {
     }
   }
 
-  private async cacheRecommendations(userId: string, date: Date, recommendations: any): Promise<void> {
+  private async cacheRecommendations(
+    userId: string,
+    date: Date,
+    recommendations: any,
+  ): Promise<void> {
     const cacheKey = `recommendations:${userId}:${date.toISOString().split('T')[0]}`;
     const ttl = this.calculateTTLUntilMidnight();
-    
+
     await this.redis.set(cacheKey, JSON.stringify(recommendations), ttl);
   }
 
@@ -326,7 +343,7 @@ export class RecommenderService {
     const now = new Date();
     const midnight = new Date();
     midnight.setHours(24, 0, 0, 0);
-    
+
     return Math.floor((midnight.getTime() - now.getTime()) / 1000);
   }
 
@@ -373,9 +390,9 @@ export class RecommenderService {
       };
     }
 
-          // If no data, generate
+    // If no data, generate
     const generatedRecs = await this.generateDailyRecommendationsForUser(userId);
-    
+
     return {
       recommendations: generatedRecs,
       source: 'generated',
@@ -397,4 +414,4 @@ export class RecommenderService {
       source: recommendations.source,
     };
   }
-} 
+}

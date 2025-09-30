@@ -20,4 +20,4 @@ export class AnalyticsController {
   findOne(@Param('id') id: string) {
     return this.analyticsService.findOne(id);
   }
-} 
+}

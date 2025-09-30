@@ -9,7 +9,7 @@ export class RedisService implements OnModuleDestroy {
   constructor(private configService: ConfigService) {
     // Проверяем доступность Redis
     this.isRedisAvailable = false; // Временно отключаем Redis
-    
+
     if (this.isRedisAvailable) {
       console.log('✅ Redis connected');
     } else {
@@ -112,4 +112,4 @@ export class RedisService implements OnModuleDestroy {
     }
     console.log('❌ Redis disconnected');
   }
-} 
+}

@@ -8,4 +8,4 @@ export class MagicLinkDto {
   })
   @IsEmail()
   email: string;
-} 
+}

@@ -20,7 +20,7 @@ export class AstroService {
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   async updateDailyAstroData() {
     this.logger.log('🔄 Updating daily astrological data...');
-    
+
     try {
       const today = new Date();
       const tomorrow = new Date(today);
@@ -41,7 +41,7 @@ export class AstroService {
 
   async updateMoonPhases(date: Date) {
     const dateStr = date.toISOString().split('T')[0];
-    
+
     // Check if data already exists for this date
     const existingPhase = await this.prisma.moonPhase.findUnique({
       where: { date: date },
@@ -54,7 +54,7 @@ export class AstroService {
     try {
       // Get moon data through Swiss Ephemeris
       const moonData = await this.getMoonData(date);
-      
+
       // Create moon phase record
       const moonPhase = await this.prisma.moonPhase.create({
         data: {
@@ -77,14 +77,14 @@ export class AstroService {
   private async getMoonData(date: Date): Promise<any> {
     // Упрощенный расчет лунной фазы
     // В реальном проекте здесь будет использование Swiss Ephemeris
-    
+
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
 
     // Простой алгоритм расчета лунной фазы
     const phase = this.calculateSimpleMoonPhase(year, month, day);
-    
+
     return {
       phase: phase.phase,
       illumination: phase.illumination,
@@ -96,13 +96,15 @@ export class AstroService {
   private calculateSimpleMoonPhase(year: number, month: number, day: number) {
     // Упрощенный алгоритм расчета лунной фазы
     // В реальном проекте используется Swiss Ephemeris
-    
+
     const baseDate = new Date(2000, 0, 6); // 6 января 2000 - новолуние
     const targetDate = new Date(year, month - 1, day);
-    
-    const daysDiff = Math.floor((targetDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    const daysDiff = Math.floor(
+      (targetDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
     const lunarDays = daysDiff % 29.53058867;
-    
+
     let phase: string;
     let illumination: number;
 
@@ -205,7 +207,7 @@ export class AstroService {
 
   async getAstrologicalInfluences(date: Date): Promise<any> {
     const moonPhase = await this.getMoonPhaseForDate(date);
-    
+
     // Определяем влияние лунной фазы на разные сферы жизни
     const influences = {
       moonPhase: moonPhase.phase,
@@ -217,25 +219,29 @@ export class AstroService {
     return influences;
   }
 
-  async generateNatalChart(natalChartData: { birthDate: string; birthTime: string; birthPlace: string }): Promise<any> {
+  async generateNatalChart(natalChartData: {
+    birthDate: string;
+    birthTime: string;
+    birthPlace: string;
+  }): Promise<any> {
     try {
       this.logger.log('🔮 Generating natal chart...');
 
       // Parse birth date and time
       const birthDateTime = new Date(`${natalChartData.birthDate}T${natalChartData.birthTime}`);
-      
+
       if (isNaN(birthDateTime.getTime())) {
         throw new Error('Invalid date or time format');
       }
 
       // Get coordinates for birth place (simplified)
       const coordinates = this.getCoordinatesForPlace(natalChartData.birthPlace);
-      
+
       // Generate natal chart
       const natalChart = await this.calculateNatalChart(birthDateTime, coordinates);
-      
+
       this.logger.log('✅ Natal chart generated successfully');
-      
+
       return {
         success: true,
         natalChart,
@@ -244,7 +250,7 @@ export class AstroService {
           birthTime: natalChartData.birthTime,
           birthPlace: natalChartData.birthPlace,
           generatedAt: new Date().toISOString(),
-        }
+        },
       };
     } catch (error) {
       this.logger.error('❌ Error generating natal chart:', error);
@@ -252,19 +258,22 @@ export class AstroService {
     }
   }
 
-  private async calculateNatalChart(birthDateTime: Date, coordinates: { lat: number; lon: number }): Promise<any> {
+  private async calculateNatalChart(
+    birthDateTime: Date,
+    coordinates: { lat: number; lon: number },
+  ): Promise<any> {
     // Используем Swiss Ephemeris для расчета позиций планет
     const julianDay = this.dateToJulianDay(birthDateTime);
-    
+
     // Позиции основных планет
     const planets = await this.calculatePlanetPositions(julianDay);
-    
+
     // Асцендент и MC
     const houses = this.calculateHouses(julianDay, coordinates);
-    
+
     // Аспекты между планетами
     const aspects = this.calculateAspects(planets);
-    
+
     return {
       planets,
       houses,
@@ -273,7 +282,7 @@ export class AstroService {
         julianDay,
         coordinates,
         localTime: birthDateTime.toISOString(),
-      }
+      },
     };
   }
 
@@ -283,12 +292,17 @@ export class AstroService {
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const hour = date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
-    
+
     // Упрощенный расчет юлианского дня
     // В реальном проекте используется более точная формула
-    let jd = 367 * year - Math.floor(7 * (year + Math.floor((month + 9) / 12)) / 4) + 
-             Math.floor(275 * month / 9) + day + 1721013.5 + hour / 24;
-    
+    const jd =
+      367 * year -
+      Math.floor((7 * (year + Math.floor((month + 9) / 12))) / 4) +
+      Math.floor((275 * month) / 9) +
+      day +
+      1721013.5 +
+      hour / 24;
+
     return jd;
   }
 
@@ -307,11 +321,11 @@ export class AstroService {
     ];
 
     const positions = [];
-    
+
     for (const planet of planets) {
       try {
         const result = swisseph.swe_calc_ut(julianDay, planet.id, swisseph.SEFLG_SWIEPH) as any;
-        
+
         positions.push({
           name: planet.name,
           symbol: planet.symbol,
@@ -334,11 +348,11 @@ export class AstroService {
           speed: 0,
           sign: 'ARIES',
           house: 1,
-          error: 'Failed to calculate'
+          error: 'Failed to calculate',
         });
       }
     }
-    
+
     return positions;
   }
 
@@ -346,7 +360,7 @@ export class AstroService {
     try {
       // Calculate houses through Swiss Ephemeris
       const houses = swisseph.swe_houses(julianDay, coordinates.lat, coordinates.lon, 'P') as any;
-      
+
       return {
         ascendant: houses.ascendant || 0,
         mc: houses.mc || 0,
@@ -360,7 +374,7 @@ export class AstroService {
       return {
         ascendant: 0,
         mc: 0,
-        error: 'Failed to calculate'
+        error: 'Failed to calculate',
       };
     }
   }
@@ -368,27 +382,27 @@ export class AstroService {
   private calculateAspects(planets: any[]): any[] {
     const aspects = [];
     const aspectOrbs = {
-      conjunction: 10,    // Соединение
-      sextile: 4,         // Секстиль
-      square: 8,          // Квадрат
-      trine: 8,           // Трин
-      opposition: 10,     // Оппозиция
+      conjunction: 10, // Соединение
+      sextile: 4, // Секстиль
+      square: 8, // Квадрат
+      trine: 8, // Трин
+      opposition: 10, // Оппозиция
     };
 
     for (let i = 0; i < planets.length; i++) {
       for (let j = i + 1; j < planets.length; j++) {
         const planet1 = planets[i];
         const planet2 = planets[j];
-        
+
         if (planet1.error || planet2.error) continue;
-        
+
         const angle = Math.abs(planet1.longitude - planet2.longitude);
         const normalizedAngle = angle > 180 ? 360 - angle : angle;
-        
+
         // Определяем аспект
         let aspectType = null;
         let orb = 0;
-        
+
         if (Math.abs(normalizedAngle - 0) <= aspectOrbs.conjunction) {
           aspectType = 'conjunction';
           orb = Math.abs(normalizedAngle - 0);
@@ -405,7 +419,7 @@ export class AstroService {
           aspectType = 'opposition';
           orb = Math.abs(normalizedAngle - 180);
         }
-        
+
         if (aspectType) {
           aspects.push({
             planet1: planet1.name,
@@ -417,16 +431,26 @@ export class AstroService {
         }
       }
     }
-    
+
     return aspects;
   }
 
   private getZodiacSign(longitude: number): string {
     const signs = [
-      'ARIES', 'TAURUS', 'GEMINI', 'CANCER', 'LEO', 'VIRGO',
-      'LIBRA', 'SCORPIO', 'SAGITTARIUS', 'CAPRICORN', 'AQUARIUS', 'PISCES'
+      'ARIES',
+      'TAURUS',
+      'GEMINI',
+      'CANCER',
+      'LEO',
+      'VIRGO',
+      'LIBRA',
+      'SCORPIO',
+      'SAGITTARIUS',
+      'CAPRICORN',
+      'AQUARIUS',
+      'PISCES',
     ];
-    
+
     const signIndex = Math.floor(longitude / 30);
     return signs[signIndex % 12];
   }
@@ -439,36 +463,36 @@ export class AstroService {
   private getCoordinatesForPlace(place: string): { lat: number; lon: number } {
     // Simplified geocoding (in real project, geocoding API would be used)
     const placeMap: { [key: string]: { lat: number; lon: number } } = {
-      'Moscow': { lat: 55.7558, lon: 37.6176 },
+      Moscow: { lat: 55.7558, lon: 37.6176 },
       'Saint Petersburg': { lat: 59.9311, lon: 30.3609 },
-      'Novosibirsk': { lat: 55.0084, lon: 82.9357 },
-      'Yekaterinburg': { lat: 56.8519, lon: 60.6122 },
-      'London': { lat: 51.5074, lon: -0.1278 },
-      'New York': { lat: 40.7128, lon: -74.0060 },
-      'Paris': { lat: 48.8566, lon: 2.3522 },
-      'Tokyo': { lat: 35.6762, lon: 139.6503 },
-      'default': { lat: 55.7558, lon: 37.6176 }, // Moscow by default
+      Novosibirsk: { lat: 55.0084, lon: 82.9357 },
+      Yekaterinburg: { lat: 56.8519, lon: 60.6122 },
+      London: { lat: 51.5074, lon: -0.1278 },
+      'New York': { lat: 40.7128, lon: -74.006 },
+      Paris: { lat: 48.8566, lon: 2.3522 },
+      Tokyo: { lat: 35.6762, lon: 139.6503 },
+      default: { lat: 55.7558, lon: 37.6176 }, // Moscow by default
     };
-    
+
     for (const [city, coords] of Object.entries(placeMap)) {
       if (place.toLowerCase().includes(city.toLowerCase())) {
         return coords;
       }
     }
-    
+
     return placeMap.default;
   }
 
   private getEnergyByMoonPhase(phase: string): string {
     const energyMap = {
-      'NEW_MOON': 'Low - time for planning and intentions',
-      'WAXING_CRESCENT': 'Waxing - time for development and growth',
-      'FIRST_QUARTER': 'Medium - time for actions and decisions',
-      'WAXING_GIBBOUS': 'High - time for project completion',
-      'FULL_MOON': 'Maximum - time for manifestation and realization',
-      'WANING_GIBBOUS': 'Waning - time for analysis and evaluation',
-      'LAST_QUARTER': 'Medium - time for letting go and cleansing',
-      'WANING_CRESCENT': 'Low - time for rest and preparation',
+      NEW_MOON: 'Low - time for planning and intentions',
+      WAXING_CRESCENT: 'Waxing - time for development and growth',
+      FIRST_QUARTER: 'Medium - time for actions and decisions',
+      WAXING_GIBBOUS: 'High - time for project completion',
+      FULL_MOON: 'Maximum - time for manifestation and realization',
+      WANING_GIBBOUS: 'Waning - time for analysis and evaluation',
+      LAST_QUARTER: 'Medium - time for letting go and cleansing',
+      WANING_CRESCENT: 'Low - time for rest and preparation',
     };
 
     return energyMap[phase] || 'Undefined';
@@ -476,14 +500,14 @@ export class AstroService {
 
   private getRecommendedActivities(phase: string): string[] {
     const activitiesMap = {
-      'NEW_MOON': ['Planning', 'Meditation', 'Setting goals'],
-      'WAXING_CRESCENT': ['Learning', 'Developing skills', 'New projects'],
-      'FIRST_QUARTER': ['Making decisions', 'Taking action', 'Overcoming obstacles'],
-      'WAXING_GIBBOUS': ['Completing projects', 'Detail work', 'Preparing for launch'],
-      'FULL_MOON': ['Manifestation', 'Celebration', 'Implementing plans'],
-      'WANING_GIBBOUS': ['Analyzing results', 'Evaluation', 'Correction'],
-      'LAST_QUARTER': ['Letting go', 'Cleansing', 'Forgiveness'],
-      'WANING_CRESCENT': ['Rest', 'Preparation', 'Inner work'],
+      NEW_MOON: ['Planning', 'Meditation', 'Setting goals'],
+      WAXING_CRESCENT: ['Learning', 'Developing skills', 'New projects'],
+      FIRST_QUARTER: ['Making decisions', 'Taking action', 'Overcoming obstacles'],
+      WAXING_GIBBOUS: ['Completing projects', 'Detail work', 'Preparing for launch'],
+      FULL_MOON: ['Manifestation', 'Celebration', 'Implementing plans'],
+      WANING_GIBBOUS: ['Analyzing results', 'Evaluation', 'Correction'],
+      LAST_QUARTER: ['Letting go', 'Cleansing', 'Forgiveness'],
+      WANING_CRESCENT: ['Rest', 'Preparation', 'Inner work'],
     };
 
     return activitiesMap[phase] || [];
@@ -491,16 +515,16 @@ export class AstroService {
 
   private getRecommendedCrystals(phase: string): string[] {
     const crystalsMap = {
-      'NEW_MOON': ['Moonstone', 'Pearl', 'Selenite'],
-      'WAXING_CRESCENT': ['Rose Quartz', 'Amethyst', 'Aventurine'],
-      'FIRST_QUARTER': ['Tiger\'s Eye', 'Hematite', 'Obsidian'],
-      'WAXING_GIBBOUS': ['Citrine', 'Topaz', 'Sunstone'],
-      'FULL_MOON': ['Quartz crystal', 'Diamond', 'White sapphire'],
-      'WANING_GIBBOUS': ['Labradorite', 'Azurite', 'Lapis Lazuli'],
-      'LAST_QUARTER': ['Black tourmaline', 'Dusty quartz', 'Shungite'],
-      'WANING_CRESCENT': ['Agate', 'Jasper', 'Serdoli'],
+      NEW_MOON: ['Moonstone', 'Pearl', 'Selenite'],
+      WAXING_CRESCENT: ['Rose Quartz', 'Amethyst', 'Aventurine'],
+      FIRST_QUARTER: ["Tiger's Eye", 'Hematite', 'Obsidian'],
+      WAXING_GIBBOUS: ['Citrine', 'Topaz', 'Sunstone'],
+      FULL_MOON: ['Quartz crystal', 'Diamond', 'White sapphire'],
+      WANING_GIBBOUS: ['Labradorite', 'Azurite', 'Lapis Lazuli'],
+      LAST_QUARTER: ['Black tourmaline', 'Dusty quartz', 'Shungite'],
+      WANING_CRESCENT: ['Agate', 'Jasper', 'Serdoli'],
     };
 
     return crystalsMap[phase] || [];
   }
-} 
+}

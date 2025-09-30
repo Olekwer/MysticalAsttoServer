@@ -17,7 +17,7 @@ export class EnergyEngineService {
   @Cron(CronExpression.EVERY_DAY_AT_4AM)
   async calculateDailyEnergyForAllUsers() {
     this.logger.log('🔄 Calculating daily energy score for all users');
-    
+
     try {
       const users = await this.prisma.user.findMany({
         select: { id: true, timezone: true },
@@ -29,7 +29,7 @@ export class EnergyEngineService {
 
       this.logger.log(`✅ Daily energy score calculated for ${users.length} users`);
     } catch (error) {
-              this.logger.error('❌ Error calculating daily energy score:', error);
+      this.logger.error('❌ Error calculating daily energy score:', error);
     }
   }
 
@@ -63,7 +63,7 @@ export class EnergyEngineService {
 
       // Получаем астрологические данные
       const astroInfluences = await this.astroService.getAstrologicalInfluences(today);
-      
+
       // Рассчитываем энергетический показатель
       const energyScore = await this.calculateEnergyScore(user, astroInfluences, today);
 
@@ -126,14 +126,14 @@ export class EnergyEngineService {
 
   private getMoonPhaseBonus(moonPhase: string): number {
     const bonuses = {
-      'NEW_MOON': -10,      // Низкая энергия
-      'WAXING_CRESCENT': 5, // Растущая энергия
-      'FIRST_QUARTER': 10,  // Средняя энергия
-      'WAXING_GIBBOUS': 15, // Высокая энергия
-      'FULL_MOON': 20,      // Максимальная энергия
-      'WANING_GIBBOUS': 10, // Снижающаяся энергия
-      'LAST_QUARTER': 5,    // Средняя энергия
-      'WANING_CRESCENT': -5, // Низкая энергия
+      NEW_MOON: -10, // Низкая энергия
+      WAXING_CRESCENT: 5, // Растущая энергия
+      FIRST_QUARTER: 10, // Средняя энергия
+      WAXING_GIBBOUS: 15, // Высокая энергия
+      FULL_MOON: 20, // Максимальная энергия
+      WANING_GIBBOUS: 10, // Снижающаяся энергия
+      LAST_QUARTER: 5, // Средняя энергия
+      WANING_CRESCENT: -5, // Низкая энергия
     };
 
     return bonuses[moonPhase] || 0;
@@ -155,7 +155,8 @@ export class EnergyEngineService {
     else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) currentSign = 'VIRGO';
     else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) currentSign = 'LIBRA';
     else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) currentSign = 'SCORPIO';
-    else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) currentSign = 'SAGITTARIUS';
+    else if ((month === 11 && day >= 22) || (month === 12 && day <= 21))
+      currentSign = 'SAGITTARIUS';
     else if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) currentSign = 'CAPRICORN';
     else if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) currentSign = 'AQUARIUS';
     else currentSign = 'PISCES';
@@ -167,8 +168,18 @@ export class EnergyEngineService {
 
     // Бонус за соседние знаки
     const zodiacOrder = [
-      'ARIES', 'TAURUS', 'GEMINI', 'CANCER', 'LEO', 'VIRGO',
-      'LIBRA', 'SCORPIO', 'SAGITTARIUS', 'CAPRICORN', 'AQUARIUS', 'PISCES'
+      'ARIES',
+      'TAURUS',
+      'GEMINI',
+      'CANCER',
+      'LEO',
+      'VIRGO',
+      'LIBRA',
+      'SCORPIO',
+      'SAGITTARIUS',
+      'CAPRICORN',
+      'AQUARIUS',
+      'PISCES',
     ];
 
     const userIndex = zodiacOrder.indexOf(zodiacSign);
@@ -176,11 +187,11 @@ export class EnergyEngineService {
     const distance = Math.min(
       Math.abs(userIndex - currentIndex),
       Math.abs(userIndex - currentIndex + 12),
-      Math.abs(userIndex - currentIndex - 12)
+      Math.abs(userIndex - currentIndex - 12),
     );
 
-    if (distance === 1) return 5;  // Соседние знаки
-    if (distance === 2) return 2;  // Через один знак
+    if (distance === 1) return 5; // Соседние знаки
+    if (distance === 2) return 2; // Через один знак
     if (distance === 6) return -5; // Противоположные знаки
 
     return 0;
@@ -191,45 +202,45 @@ export class EnergyEngineService {
 
     // Влияние элемента на лунную фазу
     const elementMoonBonus = {
-      'FIRE': {
-        'NEW_MOON': 5,      // Огонь помогает в новолуние
-        'FULL_MOON': 10,    // Огонь усиливается в полнолуние
-        'WAXING_CRESCENT': 8,
-        'WAXING_GIBBOUS': 12,
-        'FIRST_QUARTER': 6,
-        'LAST_QUARTER': 3,
-        'WANING_GIBBOUS': 4,
-        'WANING_CRESCENT': 2,
+      FIRE: {
+        NEW_MOON: 5, // Огонь помогает в новолуние
+        FULL_MOON: 10, // Огонь усиливается в полнолуние
+        WAXING_CRESCENT: 8,
+        WAXING_GIBBOUS: 12,
+        FIRST_QUARTER: 6,
+        LAST_QUARTER: 3,
+        WANING_GIBBOUS: 4,
+        WANING_CRESCENT: 2,
       },
-      'EARTH': {
-        'NEW_MOON': 8,      // Земля стабильна в новолуние
-        'FULL_MOON': 5,     // Земля менее активна в полнолуние
-        'WAXING_CRESCENT': 6,
-        'WAXING_GIBBOUS': 4,
-        'FIRST_QUARTER': 7,
-        'LAST_QUARTER': 8,
-        'WANING_GIBBOUS': 6,
-        'WANING_CRESCENT': 7,
+      EARTH: {
+        NEW_MOON: 8, // Земля стабильна в новолуние
+        FULL_MOON: 5, // Земля менее активна в полнолуние
+        WAXING_CRESCENT: 6,
+        WAXING_GIBBOUS: 4,
+        FIRST_QUARTER: 7,
+        LAST_QUARTER: 8,
+        WANING_GIBBOUS: 6,
+        WANING_CRESCENT: 7,
       },
-      'AIR': {
-        'NEW_MOON': 3,      // Воздух менее активен в новолуние
-        'FULL_MOON': 8,     // Воздух активен в полнолуние
-        'WAXING_CRESCENT': 6,
-        'WAXING_GIBBOUS': 9,
-        'FIRST_QUARTER': 7,
-        'LAST_QUARTER': 4,
-        'WANING_GIBBOUS': 5,
-        'WANING_CRESCENT': 3,
+      AIR: {
+        NEW_MOON: 3, // Воздух менее активен в новолуние
+        FULL_MOON: 8, // Воздух активен в полнолуние
+        WAXING_CRESCENT: 6,
+        WAXING_GIBBOUS: 9,
+        FIRST_QUARTER: 7,
+        LAST_QUARTER: 4,
+        WANING_GIBBOUS: 5,
+        WANING_CRESCENT: 3,
       },
-      'WATER': {
-        'NEW_MOON': 10,     // Вода очень активна в новолуние
-        'FULL_MOON': 15,    // Вода максимально активна в полнолуние
-        'WAXING_CRESCENT': 12,
-        'WAXING_GIBBOUS': 14,
-        'FIRST_QUARTER': 11,
-        'LAST_QUARTER': 9,
-        'WANING_GIBBOUS': 8,
-        'WANING_CRESCENT': 6,
+      WATER: {
+        NEW_MOON: 10, // Вода очень активна в новолуние
+        FULL_MOON: 15, // Вода максимально активна в полнолуние
+        WAXING_CRESCENT: 12,
+        WAXING_GIBBOUS: 14,
+        FIRST_QUARTER: 11,
+        LAST_QUARTER: 9,
+        WANING_GIBBOUS: 8,
+        WANING_CRESCENT: 6,
       },
     };
 
@@ -238,7 +249,7 @@ export class EnergyEngineService {
 
   private getSeasonalBonus(date: Date): number {
     const month = date.getMonth() + 1;
-    
+
     // Весна (март-май) - энергия роста
     if (month >= 3 && month <= 5) return 8;
     // Лето (июнь-август) - максимальная энергия
@@ -251,15 +262,15 @@ export class EnergyEngineService {
 
   private getDayOfWeekBonus(date: Date): number {
     const dayOfWeek = date.getDay();
-    
+
     const dayBonuses = {
-      0: 5,  // Воскресенье - день Солнца
-      1: 8,  // Понедельник - день Луны
-      2: 6,  // Вторник - день Марса
-      3: 4,  // Среда - день Меркурия
-      4: 7,  // Четверг - день Юпитера
-      5: 3,  // Пятница - день Венеры
-      6: 2,  // Суббота - день Сатурна
+      0: 5, // Воскресенье - день Солнца
+      1: 8, // Понедельник - день Луны
+      2: 6, // Вторник - день Марса
+      3: 4, // Среда - день Меркурия
+      4: 7, // Четверг - день Юпитера
+      5: 3, // Пятница - день Венеры
+      6: 2, // Суббота - день Сатурна
     };
 
     return dayBonuses[dayOfWeek] || 0;
@@ -294,7 +305,7 @@ export class EnergyEngineService {
     if (energyScore) {
       // Обновляем кэш
       await this.redis.set(cacheKey, energyScore.score.toString(), 86400);
-      
+
       return {
         score: energyScore.score,
         source: 'database',
@@ -305,7 +316,7 @@ export class EnergyEngineService {
 
     // Если нет данных, рассчитываем
     const calculatedScore = await this.calculateDailyEnergyForUser(userId);
-    
+
     return {
       score: calculatedScore,
       source: 'calculated',
@@ -329,4 +340,4 @@ export class EnergyEngineService {
       orderBy: { date: 'desc' },
     });
   }
-} 
+}

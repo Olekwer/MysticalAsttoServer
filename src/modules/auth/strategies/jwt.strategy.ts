@@ -32,4 +32,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       isPremium: user.isPremium,
     };
   }
-} 
+}

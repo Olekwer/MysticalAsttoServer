@@ -20,4 +20,4 @@ export class NotificationsController {
   findOne(@Param('id') id: string) {
     return this.notificationsService.findOne(id);
   }
-} 
+}

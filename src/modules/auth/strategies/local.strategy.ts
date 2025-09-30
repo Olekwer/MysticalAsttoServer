@@ -22,4 +22,4 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Неверные учетные данные');
     }
   }
-} 
+}

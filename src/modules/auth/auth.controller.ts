@@ -19,8 +19,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({ status: 201, description: 'User successfully registered' })
   @ApiResponse({ status: 400, description: 'Invalid data or user already exists' })
-  async register(@Body() createUserDto: CreateUserDto, @Req() req: any) {
-    // const language = this.i18nService.detectLanguage(req);
+  async register(@Body() createUserDto: CreateUserDto, @Req() _req: any) {
+    // const language = this.i18nService.detectLanguage(_req);
     const language = 'en'; // Временный язык
     return this.authService.register(createUserDto, language);
   }
@@ -37,8 +37,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Send magic link' })
   @ApiResponse({ status: 200, description: 'Magic link sent to email' })
   @ApiResponse({ status: 400, description: 'User not found' })
-  async sendMagicLink(@Body() magicLinkDto: MagicLinkDto, @Req() req: any) {
-    // const language = this.i18nService.detectLanguage(req);
+  async sendMagicLink(@Body() magicLinkDto: MagicLinkDto, @Req() _req: any) {
+    // const language = this.i18nService.detectLanguage(_req);
     const language = 'en'; // Временный язык
     return this.authService.sendMagicLink(magicLinkDto, language);
   }
@@ -60,4 +60,4 @@ export class AuthController {
   async refreshToken(@Req() req: any) {
     return this.authService.refreshToken(req.user.id);
   }
-} 
+}

@@ -79,4 +79,4 @@ export interface UserAstroProfile {
   birthTime: string;
   birthPlace: string;
   timezone: string;
-} 
+}

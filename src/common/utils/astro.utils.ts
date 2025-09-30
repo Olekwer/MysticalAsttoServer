@@ -35,7 +35,7 @@ export class AstroUtils {
     if (earthSigns.includes(zodiacSign as any)) return ELEMENTS.EARTH;
     if (airSigns.includes(zodiacSign as any)) return ELEMENTS.AIR;
     if (waterSigns.includes(zodiacSign as any)) return ELEMENTS.WATER;
-    
+
     return ELEMENTS.FIRE; // fallback
   }
 
@@ -46,9 +46,18 @@ export class AstroUtils {
     if (sign1 === sign2) return 100; // Один и тот же знак
 
     const zodiacOrder = [
-      ZODIAC_SIGNS.ARIES, ZODIAC_SIGNS.TAURUS, ZODIAC_SIGNS.GEMINI, ZODIAC_SIGNS.CANCER,
-      ZODIAC_SIGNS.LEO, ZODIAC_SIGNS.VIRGO, ZODIAC_SIGNS.LIBRA, ZODIAC_SIGNS.SCORPIO,
-      ZODIAC_SIGNS.SAGITTARIUS, ZODIAC_SIGNS.CAPRICORN, ZODIAC_SIGNS.AQUARIUS, ZODIAC_SIGNS.PISCES
+      ZODIAC_SIGNS.ARIES,
+      ZODIAC_SIGNS.TAURUS,
+      ZODIAC_SIGNS.GEMINI,
+      ZODIAC_SIGNS.CANCER,
+      ZODIAC_SIGNS.LEO,
+      ZODIAC_SIGNS.VIRGO,
+      ZODIAC_SIGNS.LIBRA,
+      ZODIAC_SIGNS.SCORPIO,
+      ZODIAC_SIGNS.SAGITTARIUS,
+      ZODIAC_SIGNS.CAPRICORN,
+      ZODIAC_SIGNS.AQUARIUS,
+      ZODIAC_SIGNS.PISCES,
     ];
 
     const index1 = zodiacOrder.indexOf(sign1 as any);
@@ -59,7 +68,7 @@ export class AstroUtils {
     const distance = Math.min(
       Math.abs(index1 - index2),
       Math.abs(index1 - index2 + 12),
-      Math.abs(index1 - index2 - 12)
+      Math.abs(index1 - index2 - 12),
     );
 
     // Соседние знаки - хорошая совместимость
@@ -77,7 +86,7 @@ export class AstroUtils {
    */
   static getCurrentSeason(): string {
     const month = new Date().getMonth() + 1;
-    
+
     if (month >= 3 && month <= 5) return 'spring';
     if (month >= 6 && month <= 8) return 'summer';
     if (month >= 9 && month <= 11) return 'autumn';
@@ -97,16 +106,23 @@ export class AstroUtils {
    */
   static isFullMoon(date: Date): boolean {
     // Упрощенная проверка - в реальном проекте используется Swiss Ephemeris
-    const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
 
     // Примерные даты полнолуний (упрощенно)
     const fullMoonDates = [
-      { month: 1, day: 6 }, { month: 2, day: 5 }, { month: 3, day: 7 },
-      { month: 4, day: 6 }, { month: 5, day: 5 }, { month: 6, day: 4 },
-      { month: 7, day: 3 }, { month: 8, day: 2 }, { month: 9, day: 1 },
-      { month: 10, day: 1 }, { month: 11, day: 30 }, { month: 12, day: 30 }
+      { month: 1, day: 6 },
+      { month: 2, day: 5 },
+      { month: 3, day: 7 },
+      { month: 4, day: 6 },
+      { month: 5, day: 5 },
+      { month: 6, day: 4 },
+      { month: 7, day: 3 },
+      { month: 8, day: 2 },
+      { month: 9, day: 1 },
+      { month: 10, day: 1 },
+      { month: 11, day: 30 },
+      { month: 12, day: 30 },
     ];
 
     return fullMoonDates.some(fm => fm.month === month && Math.abs(fm.day - day) <= 1);
@@ -119,11 +135,11 @@ export class AstroUtils {
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age;
   }
-} 
+}

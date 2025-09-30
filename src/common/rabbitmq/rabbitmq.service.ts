@@ -8,7 +8,7 @@ export class RabbitMQService implements OnModuleDestroy {
   constructor(private configService: ConfigService) {
     // Проверяем доступность RabbitMQ
     this.isRabbitMQAvailable = false; // Временно отключаем RabbitMQ
-    
+
     if (this.isRabbitMQAvailable) {
       console.log('✅ RabbitMQ connected');
     } else {
@@ -48,4 +48,4 @@ export class RabbitMQService implements OnModuleDestroy {
     }
     console.log('❌ RabbitMQ disconnected');
   }
-} 
+}

@@ -127,7 +127,7 @@ export class AuthService {
 
     // Send email
     const magicLink = `${this.configService.get('APP_URL')}/auth/magic-link?token=${token}`;
-    
+
     await this.emailService.sendMagicLink(email, magicLink, language || 'en');
 
     return { message: 'Magic link sent to your email' };
@@ -216,14 +216,14 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         { sub: userId, email },
-        { secret: this.configService.get('JWT_SECRET') }
+        { secret: this.configService.get('JWT_SECRET') },
       ),
       this.jwtService.signAsync(
         { sub: userId, email },
-        { 
+        {
           secret: this.configService.get('JWT_REFRESH_SECRET'),
-          expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN') || '7d'
-        }
+          expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN') || '7d',
+        },
       ),
     ]);
 
@@ -233,8 +233,8 @@ export class AuthService {
     };
   }
 
-  private async generateMagicLinkToken(userId: string): Promise<string> {
+  private async generateMagicLinkToken(_userId: string): Promise<string> {
     const randomBytes = crypto.randomBytes(32);
     return randomBytes.toString('hex');
   }
-} 
+}

@@ -7,9 +7,7 @@ import { EmailService } from '../../common/email/email.service';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prismaService: PrismaService;
-  let jwtService: JwtService;
-  let emailService: EmailService;
+  // Services are mocked in beforeEach
 
   const mockPrismaService = {
     user: {
@@ -46,9 +44,7 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    prismaService = module.get<PrismaService>(PrismaService);
-    jwtService = module.get<JwtService>(JwtService);
-    emailService = module.get<EmailService>(EmailService);
+    // Services are available through module.get if needed
   });
 
   it('should be defined', () => {
@@ -74,10 +70,7 @@ describe('AuthService', () => {
         isPremium: false,
       };
 
-      const mockTokens = {
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-      };
+      // Mock tokens would be used here
 
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       mockPrismaService.user.create.mockResolvedValue(mockUser);
@@ -122,10 +115,7 @@ describe('AuthService', () => {
         isPremium: false,
       };
 
-      const mockTokens = {
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-      };
+      // Mock tokens would be used here
 
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       mockJwtService.signAsync.mockResolvedValue('access-token');
@@ -149,4 +139,4 @@ describe('AuthService', () => {
       await expect(service.login(loginDto)).rejects.toThrow('Неверные учетные данные');
     });
   });
-}); 
+});

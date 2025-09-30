@@ -50,7 +50,7 @@ export class UsersController {
   test() {
     return {
       message: 'Test successful',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -67,15 +67,15 @@ export class UsersController {
       },
       powerPlace: {
         name: 'Pyramids of Giza, Egypt',
-        distance: 22
+        distance: 22,
       },
       powerStone: {
         name: 'Sunstone',
-        description: 'stone of leadership and confidence'
+        description: 'stone of leadership and confidence',
       },
       progress: {
-        ritualsCompleted: 0
-      }
+        ritualsCompleted: 0,
+      },
     };
   }
 
@@ -85,11 +85,11 @@ export class UsersController {
   energyDashboard() {
     const today = new Date();
     const dayOfWeek = today.toLocaleDateString('pl-PL', { weekday: 'long' });
-    const dateStr = today.toLocaleDateString('pl-PL', { 
-      weekday: 'long', 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
+    const dateStr = today.toLocaleDateString('pl-PL', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
     });
 
     // Calculate energy level based on day of week and moon phase
@@ -100,32 +100,32 @@ export class UsersController {
     return {
       date: {
         dayOfWeek: dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1),
-        fullDate: dateStr
+        fullDate: dateStr,
       },
       energy: {
         level: energyLevel,
         percentage: Math.round(energyLevel * 100),
-        message: this.getEnergyMessage(dayOfWeek, energyLevel)
+        message: this.getEnergyMessage(dayOfWeek, energyLevel),
       },
       moon: {
         phase: moonPhase.name,
         description: moonPhase.description,
-        message: moonPhase.message
+        message: moonPhase.message,
       },
       ritual: {
         name: dailyRitual.name,
-        message: dailyRitual.message
+        message: dailyRitual.message,
       },
       weeklyInsight: {
-        text: "Obserwuj rytmy swojej energii. Każdy dzień niesie inne dary i wyzwania. Dostosuj swoją praktykę do naturalnych cykli."
-      }
+        text: 'Obserwuj rytmy swojej energii. Każdy dzień niesie inne dary i wyzwania. Dostosuj swoją praktykę do naturalnych cykli.',
+      },
     };
   }
 
   private calculateEnergyLevel(date: Date): number {
     const dayOfWeek = date.getDay();
     const dayOfMonth = date.getDate();
-    
+
     // Base energy by day of week (Wednesday is power day)
     const dayEnergy = {
       0: 0.6, // Sunday
@@ -134,12 +134,12 @@ export class UsersController {
       3: 0.95, // Wednesday - power day
       4: 0.8, // Thursday
       5: 0.75, // Friday
-      6: 0.65 // Saturday
+      6: 0.65, // Saturday
     };
 
     // Add some variation based on day of month
-    const monthVariation = Math.sin(dayOfMonth / 31 * Math.PI * 2) * 0.1;
-    
+    const monthVariation = Math.sin((dayOfMonth / 31) * Math.PI * 2) * 0.1;
+
     return Math.max(0.3, Math.min(1.0, dayEnergy[dayOfWeek] + monthVariation));
   }
 
@@ -152,47 +152,47 @@ export class UsersController {
 
     if (phase < 0.125) {
       return {
-        name: "Przybywająca - energia rośnie",
-        description: "Waxing - energy grows",
-        message: "Energia lunarna wspiera Twoje intencje"
+        name: 'Przybywająca - energia rośnie',
+        description: 'Waxing - energy grows',
+        message: 'Energia lunarna wspiera Twoje intencje',
       };
     } else if (phase < 0.375) {
       return {
-        name: "Pierwsza kwadra - budowanie",
-        description: "First quarter - building",
-        message: "Czas na realizację planów"
+        name: 'Pierwsza kwadra - budowanie',
+        description: 'First quarter - building',
+        message: 'Czas na realizację planów',
       };
     } else if (phase < 0.625) {
       return {
-        name: "Pełnia - szczyt mocy",
-        description: "Full moon - peak power",
-        message: "Maksymalna energia do działania"
+        name: 'Pełnia - szczyt mocy',
+        description: 'Full moon - peak power',
+        message: 'Maksymalna energia do działania',
       };
     } else if (phase < 0.875) {
       return {
-        name: "Ubywająca - oczyszczanie",
-        description: "Waning - cleansing",
-        message: "Czas na uwolnienie tego, co nie służy"
+        name: 'Ubywająca - oczyszczanie',
+        description: 'Waning - cleansing',
+        message: 'Czas na uwolnienie tego, co nie służy',
       };
     } else {
       return {
-        name: "Nów - nowy początek",
-        description: "New moon - new beginning",
-        message: "Idealny moment na nowe intencje"
+        name: 'Nów - nowy początek',
+        description: 'New moon - new beginning',
+        message: 'Idealny moment na nowe intencje',
       };
     }
   }
 
-  private getDailyRitual(date: Date, energyLevel: number) {
+  private getDailyRitual(date: Date, _energyLevel: number) {
     const dayOfWeek = date.getDay();
     const rituals = {
-      0: { name: "Medytacja poranna", message: "Rozpocznij dzień w spokoju" },
-      1: { name: "Picie świętej wody", message: "Idealny na dzisiejszą energię" },
-      2: { name: "Spacer w naturze", message: "Połącz się z energią Ziemi" },
-      3: { name: "Praktyka wdzięczności", message: "Dzień mocy - doceniaj dary" },
-      4: { name: "Ćwiczenia oddechowe", message: "Zbalansuj swoją energię" },
-      5: { name: "Rytuał oczyszczenia", message: "Przygotuj się na weekend" },
-      6: { name: "Refleksja i planowanie", message: "Podsumuj tydzień" }
+      0: { name: 'Medytacja poranna', message: 'Rozpocznij dzień w spokoju' },
+      1: { name: 'Picie świętej wody', message: 'Idealny na dzisiejszą energię' },
+      2: { name: 'Spacer w naturze', message: 'Połącz się z energią Ziemi' },
+      3: { name: 'Praktyka wdzięczności', message: 'Dzień mocy - doceniaj dary' },
+      4: { name: 'Ćwiczenia oddechowe', message: 'Zbalansuj swoją energię' },
+      5: { name: 'Rytuał oczyszczenia', message: 'Przygotuj się na weekend' },
+      6: { name: 'Refleksja i planowanie', message: 'Podsumuj tydzień' },
     };
 
     return rituals[dayOfWeek];
@@ -200,13 +200,13 @@ export class UsersController {
 
   private getEnergyMessage(dayOfWeek: string, energyLevel: number) {
     if (dayOfWeek === 'środa') {
-      return "Środa to Twój dzień mocy";
+      return 'Środa to Twój dzień mocy';
     } else if (energyLevel > 0.8) {
-      return "Wysoka energia - wykorzystaj ją mądrze";
+      return 'Wysoka energia - wykorzystaj ją mądrze';
     } else if (energyLevel > 0.6) {
-      return "Dobra energia - czas na działanie";
+      return 'Dobra energia - czas na działanie';
     } else {
-      return "Spokojny dzień - zadbaj o siebie";
+      return 'Spokojny dzień - zadbaj o siebie';
     }
   }
 
@@ -246,4 +246,4 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
-} 
+}

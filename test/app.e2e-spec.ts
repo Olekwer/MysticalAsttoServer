@@ -16,24 +16,18 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(404); // Since we don't have a root route
+    return request(app.getHttpServer()).get('/').expect(404); // Since we don't have a root route
   });
 
   it('/health (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/health')
-      .expect(200);
+    return request(app.getHttpServer()).get('/health').expect(200);
   });
 
   it('/api (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/api')
-      .expect(200);
+    return request(app.getHttpServer()).get('/api').expect(200);
   });
 
   afterAll(async () => {
     await app.close();
   });
-}); 
+});

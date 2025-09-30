@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Param, Body, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Body, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { RitualsService } from './rituals.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -63,11 +63,7 @@ export class RitualsController {
   @Post(':id/complete')
   @ApiOperation({ summary: 'Complete a ritual' })
   @ApiResponse({ status: 200, description: 'Ritual completed' })
-  completeRitual(
-    @Param('id') ritualId: string,
-    @Body('notes') notes: string,
-    @Request() req: any,
-  ) {
+  completeRitual(@Param('id') ritualId: string, @Body('notes') notes: string, @Request() req: any) {
     return this.ritualsService.completeRitual(req.user.id, ritualId, notes);
   }
 
@@ -79,4 +75,4 @@ export class RitualsController {
   getUserRituals(@Request() req: any) {
     return this.ritualsService.getUserRituals(req.user.id);
   }
-} 
+}

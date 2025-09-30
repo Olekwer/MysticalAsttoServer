@@ -23,13 +23,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     if (process.env.NODE_ENV === 'test') {
       // Очистка базы данных для тестов
       const tablenames = await this.$queryRaw<Array<{ tablename: string }>>(
-        `SELECT tablename FROM pg_tables WHERE schemaname='public'` as any
+        `SELECT tablename FROM pg_tables WHERE schemaname='public'` as any,
       );
 
       const tables = tablenames
         .map(({ tablename }) => tablename)
-        .filter((name) => name !== '_prisma_migrations')
-        .map((name) => `"public"."${name}"`)
+        .filter(name => name !== '_prisma_migrations')
+        .map(name => `"public"."${name}"`)
         .join(', ');
 
       try {
@@ -39,4 +39,4 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       }
     }
   }
-} 
+}

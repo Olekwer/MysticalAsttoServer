@@ -4,7 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
 import { TerminusModule } from '@nestjs/terminus';
 
-    // Application modules
+// Application modules
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ContentModule } from './modules/content/content.module';
@@ -21,7 +21,7 @@ import { LocationModule } from './modules/location/location.module';
 import { AIModule } from './modules/ai/ai.module';
 import { HealthModule } from './health/health.module';
 
-    // Common modules
+// Common modules
 import { DatabaseModule } from './common/database/database.module';
 import { RedisModule } from './common/redis/redis.module';
 import { RabbitMQModule } from './common/rabbitmq/rabbitmq.module';
@@ -78,4 +78,4 @@ import { EmailModule } from './common/email/email.module';
     HealthModule,
   ],
 })
-export class AppModule {} 
+export class AppModule {}

@@ -14,15 +14,15 @@ export class I18nService {
   detectLanguage(req: Request): SupportedLanguage {
     // Получаем IP из заголовков
     const ip = this.getClientIP(req);
-    
+
     // Определяем язык по IP (геолокация)
     const language = this.getLanguageByIP(ip);
-    
+
     // Проверяем, поддерживается ли язык
     if (this.isLanguageSupported(language)) {
       return language;
     }
-    
+
     // Если язык не поддерживается, возвращаем английский по умолчанию
     return 'en';
   }
@@ -35,20 +35,20 @@ export class I18nService {
     const xForwardedFor = req.headers['x-forwarded-for'];
     const xRealIP = req.headers['x-real-ip'];
     const cfConnectingIP = req.headers['cf-connecting-ip'];
-    
+
     if (cfConnectingIP) {
       return Array.isArray(cfConnectingIP) ? cfConnectingIP[0] : cfConnectingIP;
     }
-    
+
     if (xRealIP) {
       return Array.isArray(xRealIP) ? xRealIP[0] : xRealIP;
     }
-    
+
     if (xForwardedFor) {
       const ips = Array.isArray(xForwardedFor) ? xForwardedFor : xForwardedFor.split(',');
       return ips[0].trim();
     }
-    
+
     return req.ip || req.connection.remoteAddress || '127.0.0.1';
   }
 
@@ -59,17 +59,17 @@ export class I18nService {
   private getLanguageByIP(ip: string): string {
     // Простая логика определения языка по IP
     // В реальном проекте рекомендуется использовать сервис геолокации
-    
+
     // Российские IP диапазоны
     if (this.isRussianIP(ip)) {
       return 'ru';
     }
-    
+
     // Польские IP диапазоны
     if (this.isPolishIP(ip)) {
       return 'pl';
     }
-    
+
     // По умолчанию английский
     return 'en';
   }
@@ -113,7 +113,11 @@ export class I18nService {
   /**
    * Получает перевод по ключу для конкретного языка
    */
-  async translateToLanguage(language: SupportedLanguage, key: string, options?: any): Promise<string> {
+  async translateToLanguage(
+    language: SupportedLanguage,
+    key: string,
+    options?: any,
+  ): Promise<string> {
     return this.i18n.translate(key, { lang: language, ...options });
   }
 

@@ -12,4 +12,4 @@ import { AstroModule } from '../astro/astro.module';
   providers: [EnergyEngineService, PrismaService, RedisService],
   exports: [EnergyEngineService],
 })
-export class EnergyEngineModule {} 
+export class EnergyEngineModule {}

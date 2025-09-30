@@ -15,4 +15,4 @@ export class JournalService {
       where: { id },
     });
   }
-} 
+}

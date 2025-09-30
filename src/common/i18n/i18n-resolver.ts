@@ -5,7 +5,7 @@ export class I18nResolverService implements I18nResolver {
   resolve(context: any): string | undefined {
     const request = context.switchToHttp().getRequest();
     if (!request) return 'en';
-    
+
     // Получаем язык из заголовка Accept-Language
     const acceptLanguage = request.headers['accept-language'];
     if (acceptLanguage) {
@@ -15,7 +15,7 @@ export class I18nResolverService implements I18nResolver {
         return language;
       }
     }
-    
+
     return 'en';
   }
 }
