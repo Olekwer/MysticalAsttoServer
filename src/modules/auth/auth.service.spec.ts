@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../common/database/prisma.service';
 import { EmailService } from '../../common/email/email.service';
+import * as bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -26,6 +27,7 @@ describe('AuthService', () => {
 
   const mockEmailService = {
     sendMagicLink: jest.fn(),
+    sendWelcomeEmail: jest.fn(),
   };
 
   const mockConfigService = {
@@ -109,7 +111,7 @@ describe('AuthService', () => {
       const mockUser = {
         id: 'user-id',
         email: 'test@example.com',
-        password: '$2b$12$hashedpassword',
+        password: await bcrypt.hash('password123', 12),
         zodiacSign: null,
         element: null,
         isPremium: false,

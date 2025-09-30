@@ -30,6 +30,8 @@
     "db:seed": "ts-node prisma/seed.ts",
     "db:seed-power-places": "ts-node prisma/seed-power-places.ts",
     "db:seed:mock": "ts-node prisma/seed-mock.ts",
+    "precheck": "npm run format:check && npm run lint:check && npm run build",
+    "precheck:no-tests": "npm run format:check && npm run lint:check && npm run build",
     "deploy:build": "npm run build && npm run prisma:generate",
     "deploy:docker": "docker build -t mystical-astro-api .",
     "deploy:docker:run": "docker run -p 3010:3010 --env-file .env mystical-astro-api"
