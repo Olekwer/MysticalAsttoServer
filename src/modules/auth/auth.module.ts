@@ -9,6 +9,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../../common/email/email.module';
 import { PrismaService } from '../../common/database/prisma.service';
+import { PrismaFactoryService } from '../../common/database/prisma-factory.service';
 // import { I18nModule } from '../../common/i18n/i18n.module';
 
 @Module({
@@ -27,7 +28,7 @@ import { PrismaService } from '../../common/database/prisma.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy, PrismaService],
+  providers: [AuthService, JwtStrategy, LocalStrategy, PrismaService, PrismaFactoryService],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../common/database/prisma.service';
+import { PrismaFactoryService } from '../../common/database/prisma-factory.service';
 import { EmailService } from '../../common/email/email.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -13,6 +14,7 @@ import { MagicLinkDto } from './dto/magic-link.dto';
 export class AuthService {
   constructor(
     private prisma: PrismaService,
+    private prismaFactory: PrismaFactoryService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private emailService: EmailService,
@@ -72,33 +74,36 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
-    const user = await this.prisma.user.findUnique({
-      where: { email },
+    // Use factory to create fresh client and avoid prepared statement conflicts
+    return await this.prismaFactory.withClient(async (client) => {
+      const user = await client.user.findUnique({
+        where: { email },
+      });
+
+      if (!user || !user.password) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      const tokens = await this.generateTokens(user.id, user.email);
+
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          zodiacSign: user.zodiacSign,
+          element: user.element,
+          isPremium: user.isPremium,
+        },
+        ...tokens,
+      };
     });
-
-    if (!user || !user.password) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const tokens = await this.generateTokens(user.id, user.email);
-
-    return {
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        zodiacSign: user.zodiacSign,
-        element: user.element,
-        isPremium: user.isPremium,
-      },
-      ...tokens,
-    };
   }
 
   async sendMagicLink(magicLinkDto: MagicLinkDto, language?: string) {
