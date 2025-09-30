@@ -2,9 +2,9 @@
 
 echo "🚀 Starting application..."
 
-# Run migrations first
-echo "📊 Running database migrations..."
-npx prisma migrate deploy
+# Push database schema first
+echo "📊 Pushing database schema..."
+npx prisma db push --accept-data-loss
 
 # Check if migrations succeeded
 if [ $? -eq 0 ]; then
