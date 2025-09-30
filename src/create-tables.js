@@ -12,7 +12,7 @@ async function createTables() {
     await client.connect();
     
     console.log('📊 Reading migration SQL...');
-    const sqlPath = path.join(__dirname, 'prisma', 'migrations', '20250817124647_mystical_astro', 'migration.sql');
+    const sqlPath = path.join(__dirname, '..', 'prisma', 'migrations', '20250817124647_mystical_astro', 'migration.sql');
     const sql = fs.readFileSync(sqlPath, 'utf8');
     
     console.log('🚀 Executing SQL migration...');
