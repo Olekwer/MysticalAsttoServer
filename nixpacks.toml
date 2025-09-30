@@ -3,9 +3,9 @@ nixPkgs = ["nodejs_18", "python3", "gcc", "gnumake"]
 
 [phases.build]
 cmds = [
-    "npm ci --only=production",
-    "npm run build",
-    "npx prisma generate"
+    "npm ci",
+    "npx prisma generate",
+    "npm run build"
 ]
 
 [phases.start]

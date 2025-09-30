@@ -1,0 +1,30 @@
+# Simple Dockerfile for Railway deployment
+FROM node:18-alpine
+
+# Install Python and build tools for native modules
+RUN apk add --no-cache python3 make g++ py3-pip
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install all dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build the application
+RUN npm run build
+
+# Expose port
+EXPOSE 3010
+
+# Start the application
+CMD ["npm", "run", "start:prod"]
