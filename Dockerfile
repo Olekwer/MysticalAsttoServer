@@ -1,6 +1,9 @@
 # Multi-stage build for production
 FROM node:18-alpine AS builder
 
+# Install Python and build tools for native modules
+RUN apk add --no-cache python3 make g++ py3-pip
+
 # Set working directory
 WORKDIR /app
 
@@ -22,6 +25,9 @@ RUN npm run build
 
 # Production stage
 FROM node:18-alpine AS production
+
+# Install Python and build tools (needed for runtime)
+RUN apk add --no-cache python3 make g++
 
 # Install PM2 globally
 RUN npm install -g pm2

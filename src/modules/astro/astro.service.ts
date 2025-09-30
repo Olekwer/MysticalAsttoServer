@@ -2,7 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../../common/database/prisma.service';
 import { RedisService } from '../../common/redis/redis.service';
-import * as swisseph from 'swisseph';
+// import * as swisseph from 'swisseph';
+let swisseph: any;
 
 @Injectable()
 export class AstroService {
@@ -12,9 +13,15 @@ export class AstroService {
     private prisma: PrismaService,
     private redis: RedisService,
   ) {
-    // Инициализация Swiss Ephemeris
-    const dataPath = process.env.SWISSEPH_DATA_PATH || './swisseph-data';
-    swisseph.swe_set_ephe_path(dataPath);
+    // Инициализация Swiss Ephemeris (optional for deployment)
+    try {
+      swisseph = require('swisseph');
+      const dataPath = process.env.SWISSEPH_DATA_PATH || './swisseph-data';
+      swisseph.swe_set_ephe_path(dataPath);
+    } catch (error) {
+      this.logger.warn('Swiss Ephemeris not available, using fallback calculations');
+      swisseph = null;
+    }
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
