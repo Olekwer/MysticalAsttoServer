@@ -69,7 +69,11 @@ export class DatabaseInitService implements OnModuleInit {
         await client.query(query);
         this.logger.log(`✅ Ensured enum exists: ${enumDef.name}`);
       } catch (error) {
-        this.logger.error(`❌ Failed to create enum ${enumDef.name}:`, error.message);
+        if (error.message.includes('already exists')) {
+          this.logger.log(`📋 Enum already exists: ${enumDef.name}`);
+        } else {
+          this.logger.error(`❌ Failed to create enum ${enumDef.name}:`, error.message);
+        }
         // Don't throw - continue with other enums
       }
     }
@@ -124,8 +128,8 @@ export class DatabaseInitService implements OnModuleInit {
           "name" TEXT NOT NULL,
           "description" TEXT,
           "properties" JSONB NOT NULL,
-          "zodiacSigns" "ZodiacSign"[],
-          "elements" "Element"[],
+          "zodiacSigns" TEXT[] DEFAULT '{}',
+          "elements" TEXT[] DEFAULT '{}',
           "isPremium" BOOLEAN NOT NULL DEFAULT false,
           "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
           "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -140,9 +144,9 @@ export class DatabaseInitService implements OnModuleInit {
           "description" TEXT,
           "ingredients" JSONB NOT NULL,
           "instructions" TEXT NOT NULL,
-          "benefits" TEXT[],
-          "zodiacSigns" "ZodiacSign"[],
-          "elements" "Element"[],
+          "benefits" TEXT[] DEFAULT '{}',
+          "zodiacSigns" TEXT[] DEFAULT '{}',
+          "elements" TEXT[] DEFAULT '{}',
           "isPremium" BOOLEAN NOT NULL DEFAULT false,
           "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
           "updatedAt" TIMESTAMP(3) NOT NULL,
