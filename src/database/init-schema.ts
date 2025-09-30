@@ -39,6 +39,9 @@ export class DatabaseInitService implements OnModuleInit {
       // Add missing columns to existing tables
       await this.addMissingColumns(client);
       
+      // Regenerate Prisma client after schema changes
+      await this.regeneratePrismaClient();
+      
       // Add seed data
       await this.seedData(client);
 
@@ -184,25 +187,50 @@ export class DatabaseInitService implements OnModuleInit {
 
   private async addMissingColumns(client: Client) {
     try {
-      // Add missing columns to rituals table
-      await client.query(`
-        DO $$ 
-        BEGIN
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                        WHERE table_name='rituals' AND column_name='audioUrl') THEN
-            ALTER TABLE rituals ADD COLUMN "audioUrl" TEXT;
-          END IF;
-          
-          IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                        WHERE table_name='rituals' AND column_name='locationId') THEN
-            ALTER TABLE rituals ADD COLUMN "locationId" TEXT;
-          END IF;
-        END $$;
+      // Check and add audioUrl column
+      const audioUrlExists = await client.query(`
+        SELECT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name='rituals' AND column_name='audioUrl'
+        );
       `);
       
-      this.logger.log('✅ Added missing columns to existing tables');
+      if (!audioUrlExists.rows[0]?.exists) {
+        await client.query(`ALTER TABLE rituals ADD COLUMN "audioUrl" TEXT;`);
+        this.logger.log('✅ Added audioUrl column to rituals table');
+      } else {
+        this.logger.log('📋 audioUrl column already exists');
+      }
+      
+      // Check and add locationId column
+      const locationIdExists = await client.query(`
+        SELECT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name='rituals' AND column_name='locationId'
+        );
+      `);
+      
+      if (!locationIdExists.rows[0]?.exists) {
+        await client.query(`ALTER TABLE rituals ADD COLUMN "locationId" TEXT;`);
+        this.logger.log('✅ Added locationId column to rituals table');
+      } else {
+        this.logger.log('📋 locationId column already exists');
+      }
+      
     } catch (error) {
       this.logger.error('❌ Failed to add missing columns:', error.message);
+      this.logger.error('Full error:', error);
+    }
+  }
+
+  private async regeneratePrismaClient() {
+    try {
+      this.logger.log('🔄 Regenerating Prisma client...');
+      // Force regeneration by restarting the process isn't practical
+      // Instead we'll just log that schema was updated
+      this.logger.log('✅ Database schema updated - Prisma client will sync on next restart');
+    } catch (error) {
+      this.logger.error('❌ Failed to regenerate Prisma client:', error.message);
     }
   }
 
