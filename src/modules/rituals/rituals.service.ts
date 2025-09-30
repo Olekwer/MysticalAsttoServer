@@ -1,38 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/database/prisma.service';
+import { PrismaFactoryService } from '../../common/database/prisma-factory.service';
 
 @Injectable()
 export class RitualsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private prismaFactory: PrismaFactoryService,
+  ) {}
 
   async findAll() {
-    return this.prisma.ritual.findMany({
-      include: {
-        RitualToRitualTag: {
-          include: {
-            ritual_tags: true,
-          },
+    return this.prismaFactory.withClient(async (client) => {
+      return client.ritual.findMany({
+        orderBy: {
+          createdAt: 'desc',
         },
-        location: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      });
     });
   }
 
   async findOne(id: string) {
-    return this.prisma.ritual.findUnique({
-      where: { id },
-      include: {
-        RitualToRitualTag: {
-          include: {
-            ritual_tags: true,
-          },
-        },
-        location: true,
-        userRituals: true,
-      },
+    return this.prismaFactory.withClient(async (client) => {
+      return client.ritual.findUnique({
+        where: { id },
+      });
     });
   }
 
