@@ -1,8 +1,8 @@
 # Multi-stage build for production
 FROM node:18-alpine AS builder
 
-# Install Python and build tools for native modules
-RUN apk add --no-cache python3 make g++ py3-pip
+# Install Python, build tools and OpenSSL for native modules and Prisma
+RUN apk add --no-cache python3 make g++ py3-pip openssl-dev openssl
 
 # Set working directory
 WORKDIR /app
@@ -26,8 +26,8 @@ RUN npm run build
 # Production stage
 FROM node:18-alpine AS production
 
-# Install Python and build tools (needed for runtime)
-RUN apk add --no-cache python3 make g++
+# Install Python, build tools and OpenSSL (needed for runtime)
+RUN apk add --no-cache python3 make g++ openssl-dev openssl
 
 # Install PM2 globally
 RUN npm install -g pm2
