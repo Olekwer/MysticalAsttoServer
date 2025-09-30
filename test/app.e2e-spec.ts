@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 
 // Simple mock app for e2e testing without database
 describe('AppController (e2e)', () => {
