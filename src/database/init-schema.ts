@@ -35,6 +35,9 @@ export class DatabaseInitService implements OnModuleInit {
       
       // Create tables
       await this.createTables(client);
+      
+      // Add seed data
+      await this.seedData(client);
 
       this.logger.log('✅ Database schema initialized successfully!');
       
@@ -171,6 +174,63 @@ export class DatabaseInitService implements OnModuleInit {
       this.logger.log('✅ Created indexes');
     } catch (error) {
       this.logger.error('❌ Failed to create indexes:', error.message);
+    }
+  }
+
+  private async seedData(client: Client) {
+    try {
+      // Check if test user already exists
+      const userExists = await client.query(`
+        SELECT EXISTS(SELECT 1 FROM users WHERE email = 'test@example.com');
+      `);
+
+      if (!(userExists.rows[0]?.exists)) {
+        // Create test user with hashed password
+        const bcrypt = require('bcrypt');
+        const hashedPassword = await bcrypt.hash('password123', 12);
+        
+        await client.query(`
+          INSERT INTO users (
+            id, email, password, "firstName", "lastName", 
+            "zodiacSign", element, "isEmailVerified", "isPremium",
+            "createdAt", "updatedAt"
+          ) VALUES (
+            'test-user-id', 'test@example.com', $1, 'Test', 'User',
+            'LEO', 'FIRE', true, false,
+            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+          );
+        `, [hashedPassword]);
+
+        this.logger.log('✅ Created test user: test@example.com / password123');
+      } else {
+        this.logger.log('📋 Test user already exists');
+      }
+
+      // Add sample ritual
+      const ritualExists = await client.query(`
+        SELECT EXISTS(SELECT 1 FROM rituals WHERE id = 'sample-ritual');
+      `);
+
+      if (!(ritualExists.rows[0]?.exists)) {
+        await client.query(`
+          INSERT INTO rituals (
+            id, title, description, steps, duration, category, difficulty, 
+            "isPremium", "createdAt", "updatedAt"
+          ) VALUES (
+            'sample-ritual', 'Утренняя медитация', 'Простая медитация для начала дня',
+            '["Сядьте удобно", "Закройте глаза", "Дышите глубоко", "Концентрируйтесь на дыхании"]'::jsonb,
+            10, 'meditation', 'beginner', false,
+            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+          );
+        `);
+
+        this.logger.log('✅ Created sample ritual');
+      } else {
+        this.logger.log('📋 Sample ritual already exists');
+      }
+
+    } catch (error) {
+      this.logger.error('❌ Failed to seed data:', error.message);
     }
   }
 }
