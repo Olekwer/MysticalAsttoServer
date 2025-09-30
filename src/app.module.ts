@@ -20,6 +20,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { LocationModule } from './modules/location/location.module';
 import { AIModule } from './modules/ai/ai.module';
 import { HealthModule } from './health/health.module';
+import { DatabaseInitService } from './database/init-schema';
 
 // Common modules
 import { DatabaseModule } from './common/database/database.module';
@@ -77,5 +78,6 @@ import { EmailModule } from './common/email/email.module';
     AIModule,
     HealthModule,
   ],
+  providers: [DatabaseInitService],
 })
 export class AppModule {}
