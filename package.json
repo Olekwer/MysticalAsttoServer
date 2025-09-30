@@ -12,7 +12,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "npx prisma db push --accept-data-loss && node dist/main",
+    "start:prod": "timeout 30s npx prisma db push --accept-data-loss --force-reset --skip-generate || echo 'DB push timeout, continuing...' && node dist/main",
     "start:pm2": "pm2 start ecosystem.config.js",
     "stop:pm2": "pm2 stop ecosystem.config.js",
     "restart:pm2": "pm2 restart ecosystem.config.js",

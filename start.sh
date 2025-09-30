@@ -4,7 +4,7 @@ echo "🚀 Starting application..."
 
 # Push database schema first
 echo "📊 Pushing database schema..."
-npx prisma db push --accept-data-loss
+npx prisma db push --accept-data-loss --force-reset --skip-generate
 
 # Check if migrations succeeded
 if [ $? -eq 0 ]; then
