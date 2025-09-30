@@ -19,21 +19,24 @@ async function bootstrap() {
     'http://localhost:3000',
   ];
 
+  // Check if wildcard is used
+  const allowAllOrigins = allowedOrigins.includes('*');
+
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: allowAllOrigins ? true : (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-
+      
       // Check if the origin is in our allowed list
       if (allowedOrigins.indexOf(origin) !== -1) {
         return callback(null, true);
       }
-
+      
       // In development, allow any localhost origin
       if (process.env.NODE_ENV === 'development' && origin.includes('localhost')) {
         return callback(null, true);
       }
-
+      
       // Reject the request
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
