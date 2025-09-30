@@ -96,7 +96,7 @@ describe('AuthService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'existing-user' });
 
       await expect(service.register(createUserDto)).rejects.toThrow(
-        'Пользователь с таким email уже существует',
+        'User with this email already exists',
       );
     });
   });
@@ -138,7 +138,7 @@ describe('AuthService', () => {
 
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.login(loginDto)).rejects.toThrow('Неверные учетные данные');
+      await expect(service.login(loginDto)).rejects.toThrow('Invalid credentials');
     });
   });
 });
